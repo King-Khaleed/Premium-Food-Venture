@@ -1,3 +1,4 @@
+
 'use client';
 import Image from 'next/image';
 import { motion, useInView, useSpring } from 'framer-motion';
@@ -64,7 +65,7 @@ export function WhyChooseUs() {
             transition={{ duration: 0.3 }}
             initial={{rotate: -8}}
           >
-            <Image src="https://picsum.photos/seed/collage1/400/400" alt="Collage image 1" fill className="object-cover rounded-lg shadow-xl border-4 border-white" />
+            <Image src="/img/collage-1.jpg" alt="Collage image 1" fill className="object-cover rounded-lg shadow-xl border-4 border-white" />
           </motion.div>
            <motion.div 
             className="absolute bottom-0 right-0 w-3/5 h-3/5 z-10"
@@ -72,7 +73,7 @@ export function WhyChooseUs() {
             transition={{ duration: 0.3 }}
              initial={{rotate: 5}}
           >
-            <Image src="https://picsum.photos/seed/collage2/300/300" alt="Collage image 2" fill className="object-cover rounded-lg shadow-xl border-4 border-white" />
+            <Image src="/img/collage-2.jpg" alt="Collage image 2" fill className="object-cover rounded-lg shadow-xl border-4 border-white" />
           </motion.div>
            <motion.div 
             className="absolute top-1/4 right-1/4 w-1/2 h-1/2 z-0"
@@ -80,7 +81,7 @@ export function WhyChooseUs() {
             transition={{ duration: 0.3 }}
              initial={{rotate: 12}}
           >
-            <Image src="https://picsum.photos/seed/collage3/350/350" alt="Collage image 3" fill className="object-cover rounded-lg shadow-xl border-4 border-white" />
+            <Image src="/img/collage-3.jpg" alt="Collage image 3" fill className="object-cover rounded-lg shadow-xl border-4 border-white" />
           </motion.div>
         </div>
       </div>

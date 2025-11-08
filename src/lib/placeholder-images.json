@@ -3,14 +3,14 @@
     {
       "id": "hero-image",
       "description": "A vibrant display of fresh seafood on ice.",
-      "imageUrl": "https://images.unsplash.com/photo-1704797390447-862d022943f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWFmb29kJTIwcGxhdHRlcnxlbnwwfHx8fDE3NjI1MzA0ODB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/img/hero-background.jpg",
       "imageHint": "seafood platter"
     },
     {
       "id": "gallery-1",
       "title": "Fresh Salmon",
       "description": "Close-up of a fresh salmon fillet.",
-      "imageUrl": "https://images.unsplash.com/photo-1583364697496-fbe3a993a9a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzYWxtb24lMjBmaWxsZXR8ZW58MHx8fHwxNzYyNTkxNzA4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/img/gallery-fish-1.jpg",
       "imageHint": "salmon fillet",
       "category": "fish"
     },
@@ -18,7 +18,7 @@
       "id": "gallery-2",
       "title": "Raw Chicken",
       "description": "Whole raw chickens ready for preparation.",
-      "imageUrl": "https://images.unsplash.com/photo-1672787153720-e85fe802fd9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyYXclMjBjaGlja2VufGVufDB8fHx8MTc2MjU1ODg0M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/img/gallery-chicken-1.jpg",
       "imageHint": "raw chicken",
       "category": "chicken"
     },
@@ -26,7 +26,7 @@
       "id": "gallery-3",
       "title": "Market Fish",
       "description": "A selection of fresh white fish on a market stall.",
-      "imageUrl": "https://images.unsplash.com/photo-1498654200943-1088dd4438ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmcmVzaCUyMGZpc2h8ZW58MHx8fHwxNzYyNDkzNzM5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/img/gallery-fish-2.jpg",
       "imageHint": "fresh fish",
       "category": "fish"
     },
@@ -34,7 +34,7 @@
       "id": "gallery-4",
       "title": "Shrimp Dish",
       "description": "A delicious cooked shrimp dish.",
-      "imageUrl": "https://images.unsplash.com/photo-1581073746562-e7fd2422f0eb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzaHJpbXAlMjBkaXNofGVufDB8fHx8MTc2MjU5ODAyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/img/gallery-dried-1.jpg",
       "imageHint": "shrimp dish",
       "category": "dried-products"
     },
@@ -42,7 +42,7 @@
       "id": "gallery-5",
       "title": "Roasted Chicken",
       "description": "A perfectly roasted whole chicken.",
-      "imageUrl": "https://images.unsplash.com/photo-1501200291289-c5a76c232e5f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cm9hc3RlZCUyMGNoaWNrZW58ZW58MHx8fHwxNzYyNTE1NjQwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/img/gallery-chicken-2.jpg",
       "imageHint": "roasted chicken",
       "category": "chicken"
     },
@@ -50,26 +50,26 @@
       "id": "gallery-6",
       "title": "Dried Stockfish",
       "description": "High-quality dried stockfish.",
-      "imageUrl": "https://images.unsplash.com/photo-1711135110902-d613868bc58a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxkcmllZCUyMHN0b2NrZmlzaHxlbnwwfHx8fDE3NjI1OTkzMjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/img/gallery-dried-2.jpg",
       "imageHint": "dried stockfish",
       "category": "dried-products"
     },
     {
       "id": "menu-fish",
       "description": "A fresh sea bass.",
-      "imageUrl": "https://images.unsplash.com/photo-1674574752509-1754d8098241?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzZWElMjBiYXNzfGVufDB8fHx8MTc2MjU5ODAyM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/img/product-tilapia.jpg",
       "imageHint": "sea bass"
     },
     {
       "id": "menu-chicken",
       "description": "A whole organic chicken.",
-      "imageUrl": "https://images.unsplash.com/photo-1642102903909-560c5a7665bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx3aG9sZSUyMGNoaWNrZW58ZW58MHx8fHwxNzYyNTk0Nzk3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/img/product-chicken.jpg",
       "imageHint": "whole chicken"
     },
     {
       "id": "menu-prawns",
       "description": "A bowl of fresh king prawns.",
-      "imageUrl": "https://images.unsplash.com/photo-1649077711893-3f0fa5ac0a3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxraW5nJTIwcHJhd25zfGVufDB8fHx8MTc2MjUxMTU1M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "/img/product-dried-fish.jpg",
       "imageHint": "king prawns"
     }
   ]

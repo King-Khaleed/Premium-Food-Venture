@@ -1,9 +1,10 @@
+
 import { MapPin, Phone, MessageCircle } from 'lucide-react';
 import { Button } from './ui/button';
 
 export function Contact() {
   return (
-    <section id="contact" className="relative w-full py-20 md:py-32 bg-cover bg-center bg-no-repeat" style={{backgroundImage: "url('https://picsum.photos/seed/contactbg/1920/1080')"}}>
+    <section id="contact" className="relative w-full py-20 md:py-32 bg-cover bg-center bg-no-repeat" style={{backgroundImage: "url('/img/contact-background.jpg')"}}>
       <div className="absolute inset-0 bg-[#1B4332]/80" />
       <div className="container relative z-10 text-center text-white">
         <h2 className="text-4xl md:text-6xl font-headline font-bold mb-6">

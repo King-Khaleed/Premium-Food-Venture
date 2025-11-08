@@ -1,3 +1,4 @@
+
 'use client';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,21 +9,21 @@ const testimonials = [
   {
     id: 1,
     name: "Aisha Mohammed",
-    avatar: "https://picsum.photos/seed/avatar-female-1/100/100",
+    avatar: "/img/avatar-female-1.jpg",
     rating: 5,
     text: "The best quality chicken I've ever bought! Fresh, tender, and delivered right on time."
   },
   {
     id: 2,
     name: "Ibrahim Yusuf",
-    avatar: "https://picsum.photos/seed/avatar-male-1/100/100",
+    avatar: "/img/avatar-male-1.jpg",
     rating: 5,
     text: "Their fish is always fresh and the delivery service is exceptional. Highly recommend!"
   },
   {
     id: 3,
     name: "Fatima Abdullahi",
-    avatar: "https://picsum.photos/seed/avatar-female-2/100/100",
+    avatar: "/img/avatar-female-2.jpg",
     rating: 5,
     text: "Premium quality at reasonable prices. The dried fish is my favorite!"
   }
