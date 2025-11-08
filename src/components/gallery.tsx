@@ -99,7 +99,7 @@ export function Gallery() {
                               <h3 className="font-headline text-2xl font-bold text-charcoal">{selectedImage.title}</h3>
                               <p className="font-body text-charcoal/80 mt-2">{selectedImage.description}</p>
                               <Button asChild size="lg" className="mt-6 bg-[#25D366] hover:bg-[#25D366]/90 text-white font-ui animate-pulse">
-                                <a href="https://wa.me/2348158998166" target="_blank" rel="noopener noreferrer">
+                                <a href="https://wa.me/2348034384620" target="_blank" rel="noopener noreferrer">
                                   Order This Product
                                 </a>
                               </Button>

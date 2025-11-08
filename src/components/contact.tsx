@@ -22,7 +22,7 @@ export function Contact() {
             </a>
           </Button>
           <Button asChild size="lg" className="bg-[#25D366] hover:bg-[#25D366]/90 text-white font-ui animate-pulse">
-            <a href="https://wa.me/2348158998166" target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/2348034384620" target="_blank" rel="noopener noreferrer">
               <MessageCircle className="mr-2 h-5 w-5" />
               Order via WhatsApp
             </a>

@@ -81,7 +81,7 @@ export function Header() {
               <Phone className="h-4 w-4" />
               0815 8998 166
             </a>
-             <a href="https://wa.me/2348158998166" target="_blank" rel="noopener noreferrer" className="relative">
+             <a href="https://wa.me/2348034384620" target="_blank" rel="noopener noreferrer" className="relative">
               <MessageCircle className={cn("h-6 w-6 transition-colors", scrolled ? 'text-charcoal hover:text-accent' : 'text-white hover:text-accent')} />
               <span className="absolute top-0 right-0 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>

@@ -38,7 +38,7 @@ const products = [
   }
 ];
 
-const whatsappLink = "https://wa.me/2348158998166";
+const whatsappLink = "https://wa.me/2348034384620";
 
 export function Products() {
   return (

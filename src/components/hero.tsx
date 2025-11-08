@@ -29,7 +29,7 @@ const letter = {
 export function Hero() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-image');
   const title = "PREMIUM FOOD VENTURE";
-  const whatsappLink = "https://wa.me/2348158998166";
+  const whatsappLink = "https://wa.me/2348034384620";
 
   return (
     <section className="relative h-screen min-h-[600px] w-full flex flex-col items-center justify-center text-center text-white overflow-hidden">
