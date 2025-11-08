@@ -38,6 +38,8 @@ const products = [
   }
 ];
 
+const whatsappLink = "https://wa.me/2348158998166";
+
 export function Products() {
   return (
     <section id="products" className="w-full py-20 md:py-32 bg-cream-dark">
@@ -71,7 +73,9 @@ export function Products() {
                           />
                         )}
                         <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <Button className="font-ui bg-accent text-primary-dark">Quick Order</Button>
+                          <Button asChild className="font-ui bg-accent text-primary-dark">
+                             <a href={whatsappLink} target="_blank" rel="noopener noreferrer">Quick Order</a>
+                          </Button>
                         </div>
                       </CardContent>
                       <div className="p-4 bg-white">

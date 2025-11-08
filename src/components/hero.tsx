@@ -5,6 +5,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from './ui/button';
 import { ArrowDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 const sentence = {
   hidden: { opacity: 1 },
@@ -28,6 +29,7 @@ const letter = {
 export function Hero() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-image');
   const title = "PREMIUM FOOD VENTURE";
+  const whatsappLink = "https://wa.me/2348158998166";
 
   return (
     <section className="relative h-screen min-h-[600px] w-full flex flex-col items-center justify-center text-center text-white overflow-hidden">
@@ -94,11 +96,11 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 2.5, duration: 0.8 }}
         >
-          <Button size="lg" className="font-ui bg-gradient-to-r from-accent to-gold-light text-primary-dark font-bold hover:opacity-90 transition-opacity">
-            Order Now
+          <Button size="lg" className="font-ui bg-gradient-to-r from-accent to-gold-light text-primary-dark font-bold hover:opacity-90 transition-opacity" asChild>
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer">Order Now</a>
           </Button>
-          <Button size="lg" variant="outline" className="font-ui bg-transparent border-accent text-accent hover:bg-accent hover:text-primary-dark transition-colors">
-            View Products
+          <Button size="lg" variant="outline" className="font-ui bg-transparent border-accent text-accent hover:bg-accent hover:text-primary-dark transition-colors" asChild>
+            <Link href="#products">View Products</Link>
           </Button>
         </motion.div>
       </div>

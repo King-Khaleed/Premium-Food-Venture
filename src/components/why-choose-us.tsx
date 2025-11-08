@@ -1,11 +1,35 @@
 'use client';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, useInView, useSpring } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+
+const AnimatedNumber = ({ value }: { value: number }) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const motionValue = useSpring(0, { damping: 20, stiffness: 100 });
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (isInView) {
+      motionValue.set(value);
+    }
+  }, [motionValue, isInView, value]);
+
+  useEffect(() => 
+    motionValue.on("change", (latest) => {
+      if (ref.current) {
+        ref.current.textContent = Math.round(latest).toString();
+      }
+    }),
+  [motionValue]);
+
+  return <span ref={ref}>0</span>;
+};
+
 
 const stats = [
-  { value: '500+', label: 'Happy Customers' },
-  { value: '100%', label: 'Fresh Products' },
-  { value: '24hr', label: 'Delivery' }
+  { value: 500, label: 'Happy Customers', suffix: '+' },
+  { value: 100, label: 'Fresh Products', suffix: '%' },
+  { value: 24, label: 'Hour Delivery', suffix: 'hr' }
 ];
 
 export function WhyChooseUs() {
@@ -24,7 +48,10 @@ export function WhyChooseUs() {
                 viewport={{ once: true }}
                 className="flex items-end gap-4"
               >
-                <span className="text-5xl md:text-7xl font-bold font-headline text-accent">{stat.value}</span>
+                <span className="text-5xl md:text-7xl font-bold font-headline text-accent">
+                  <AnimatedNumber value={stat.value} />
+                  {stat.suffix}
+                </span>
                 <span className="text-xl font-ui text-charcoal/80 pb-2">{stat.label}</span>
               </motion.div>
             ))}
@@ -37,7 +64,7 @@ export function WhyChooseUs() {
             transition={{ duration: 0.3 }}
             initial={{rotate: -8}}
           >
-            <Image src="https://picsum.photos/seed/collage1/400/400" alt="Collage image 1" layout="fill" className="object-cover rounded-lg shadow-xl border-4 border-white" />
+            <Image src="https://picsum.photos/seed/collage1/400/400" alt="Collage image 1" fill className="object-cover rounded-lg shadow-xl border-4 border-white" />
           </motion.div>
            <motion.div 
             className="absolute bottom-0 right-0 w-3/5 h-3/5 z-10"
@@ -45,7 +72,7 @@ export function WhyChooseUs() {
             transition={{ duration: 0.3 }}
              initial={{rotate: 5}}
           >
-            <Image src="https://picsum.photos/seed/collage2/300/300" alt="Collage image 2" layout="fill" className="object-cover rounded-lg shadow-xl border-4 border-white" />
+            <Image src="https://picsum.photos/seed/collage2/300/300" alt="Collage image 2" fill className="object-cover rounded-lg shadow-xl border-4 border-white" />
           </motion.div>
            <motion.div 
             className="absolute top-1/4 right-1/4 w-1/2 h-1/2 z-0"
@@ -53,7 +80,7 @@ export function WhyChooseUs() {
             transition={{ duration: 0.3 }}
              initial={{rotate: 12}}
           >
-            <Image src="https://picsum.photos/seed/collage3/350/350" alt="Collage image 3" layout="fill" className="object-cover rounded-lg shadow-xl border-4 border-white" />
+            <Image src="https://picsum.photos/seed/collage3/350/350" alt="Collage image 3" fill className="object-cover rounded-lg shadow-xl border-4 border-white" />
           </motion.div>
         </div>
       </div>
