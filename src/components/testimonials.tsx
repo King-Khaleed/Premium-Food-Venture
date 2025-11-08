@@ -9,21 +9,21 @@ const testimonials = [
   {
     id: 1,
     name: "Aisha Mohammed",
-    avatar: "/img/avatar-female-1.jpg",
+    avatar: "/img/female-headshot.jpg",
     rating: 5,
     text: "The best quality chicken I've ever bought! Fresh, tender, and delivered right on time."
   },
   {
     id: 2,
     name: "Ibrahim Yusuf",
-    avatar: "/img/avatar-male-1.jpg",
+    avatar: "/img/male-headshot.jpg",
     rating: 5,
     text: "Their fish is always fresh and the delivery service is exceptional. Highly recommend!"
   },
   {
     id: 3,
     name: "Fatima Abdullahi",
-    avatar: "/img/avatar-female-2.jpg",
+    avatar: "/img/female-headshot.jpg",
     rating: 5,
     text: "Premium quality at reasonable prices. The dried fish is my favorite!"
   }

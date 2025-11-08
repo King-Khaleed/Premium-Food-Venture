@@ -3,14 +3,14 @@
     {
       "id": "hero-image",
       "description": "A vibrant display of fresh seafood on ice.",
-      "imageUrl": "/img/hero-background.jpg",
+      "imageUrl": "/img/hero-background.png",
       "imageHint": "seafood platter"
     },
     {
       "id": "gallery-1",
       "title": "Fresh Salmon",
       "description": "Close-up of a fresh salmon fillet.",
-      "imageUrl": "/img/gallery-fish-1.jpg",
+      "imageUrl": "/img/fish-1.png",
       "imageHint": "salmon fillet",
       "category": "fish"
     },
@@ -18,7 +18,7 @@
       "id": "gallery-2",
       "title": "Raw Chicken",
       "description": "Whole raw chickens ready for preparation.",
-      "imageUrl": "/img/gallery-chicken-1.jpg",
+      "imageUrl": "/img/chicken-2.jpg",
       "imageHint": "raw chicken",
       "category": "chicken"
     },
@@ -26,7 +26,7 @@
       "id": "gallery-3",
       "title": "Market Fish",
       "description": "A selection of fresh white fish on a market stall.",
-      "imageUrl": "/img/gallery-fish-2.jpg",
+      "imageUrl": "/img/fish-2.jpeg",
       "imageHint": "fresh fish",
       "category": "fish"
     },
@@ -34,7 +34,7 @@
       "id": "gallery-4",
       "title": "Shrimp Dish",
       "description": "A delicious cooked shrimp dish.",
-      "imageUrl": "/img/gallery-dried-1.jpg",
+      "imageUrl": "/img/dried-fish.jpeg",
       "imageHint": "shrimp dish",
       "category": "dried-products"
     },
@@ -42,7 +42,7 @@
       "id": "gallery-5",
       "title": "Roasted Chicken",
       "description": "A perfectly roasted whole chicken.",
-      "imageUrl": "/img/gallery-chicken-2.jpg",
+      "imageUrl": "/img/chicken-3.jpg",
       "imageHint": "roasted chicken",
       "category": "chicken"
     },
@@ -50,27 +50,33 @@
       "id": "gallery-6",
       "title": "Dried Stockfish",
       "description": "High-quality dried stockfish.",
-      "imageUrl": "/img/gallery-dried-2.jpg",
+      "imageUrl": "/img/product-dried-fish.png",
       "imageHint": "dried stockfish",
       "category": "dried-products"
     },
     {
       "id": "menu-fish",
       "description": "A fresh sea bass.",
-      "imageUrl": "/img/product-tilapia.jpg",
+      "imageUrl": "/img/product-fresh-tilapia.png",
       "imageHint": "sea bass"
     },
     {
       "id": "menu-chicken",
       "description": "A whole organic chicken.",
-      "imageUrl": "/img/product-chicken.jpg",
+      "imageUrl": "/img/product-whole-chicken.png",
       "imageHint": "whole chicken"
     },
     {
       "id": "menu-prawns",
       "description": "A bowl of fresh king prawns.",
-      "imageUrl": "/img/product-dried-fish.jpg",
+      "imageUrl": "/img/product-dried-fish.png",
       "imageHint": "king prawns"
+    },
+    {
+      "id": "product-catfish",
+      "description": "Live fresh catfish.",
+      "imageUrl": "/img/product-fresh-catfish.png",
+      "imageHint": "fresh catfish"
     }
   ]
 }

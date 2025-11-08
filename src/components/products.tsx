@@ -28,7 +28,7 @@ const products = [
     id: 4,
     name: "Fresh Catfish",
     description: "Live fresh catfish",
-    imageId: "gallery-1" // Using gallery as placeholder
+    imageId: "product-catfish"
   },
   {
     id: 5,
