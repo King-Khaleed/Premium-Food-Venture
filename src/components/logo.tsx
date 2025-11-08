@@ -1,10 +1,21 @@
-import { Fish } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-export function Logo() {
+type LogoProps = {
+  isScrolled?: boolean;
+  isFooter?: boolean;
+};
+
+export function Logo({ isScrolled = false, isFooter = false }: LogoProps) {
   return (
-    <a href="/" className="flex items-center gap-2" aria-label="Premium Food Ventures Home">
-      <Fish className="h-8 w-8 text-primary" />
-      <span className="text-xl font-bold tracking-tight text-foreground font-headline">Premium Food Ventures</span>
+    <a href="/" className="flex items-center gap-2" aria-label="Premium Food Venture Home">
+      <span 
+        className={cn(
+          "text-2xl font-bold font-headline transition-colors",
+          isFooter ? 'text-white' : (isScrolled ? 'text-charcoal' : 'text-white')
+        )}
+      >
+        PFV
+      </span>
     </a>
   );
 }
