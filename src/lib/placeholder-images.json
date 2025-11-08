@@ -1,3 +1,52 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-image",
+      "description": "A vibrant display of fresh seafood on ice.",
+      "imageUrl": "https://images.unsplash.com/photo-1704797390447-862d022943f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZWFmb29kJTIwcGxhdHRlcnxlbnwwfHx8fDE3NjI1MzA0ODB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "seafood platter"
+    },
+    {
+      "id": "gallery-1",
+      "description": "Close-up of a fresh salmon fillet.",
+      "imageUrl": "https://images.unsplash.com/photo-1583364697496-fbe3a993a9a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzYWxtb24lMjBmaWxsZXR8ZW58MHx8fHwxNzYyNTkxNzA4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "salmon fillet"
+    },
+    {
+      "id": "gallery-2",
+      "description": "Whole raw chickens ready for preparation.",
+      "imageUrl": "https://images.unsplash.com/photo-1672787153720-e85fe802fd9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyYXclMjBjaGlja2VufGVufDB8fHx8MTc2MjU1ODg0M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "raw chicken"
+    },
+    {
+      "id": "gallery-3",
+      "description": "A selection of fresh white fish on a market stall.",
+      "imageUrl": "https://images.unsplash.com/photo-1498654200943-1088dd4438ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmcmVzaCUyMGZpc2h8ZW58MHx8fHwxNzYyNDkzNzM5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fresh fish"
+    },
+    {
+      "id": "gallery-4",
+      "description": "Cooked shrimp dish.",
+      "imageUrl": "https://images.unsplash.com/photo-1581073746562-e7fd2422f0eb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzaHJpbXAlMjBkaXNofGVufDB8fHx8MTc2MjU5ODAyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "shrimp dish"
+    },
+    {
+      "id": "menu-fish",
+      "description": "A fresh sea bass.",
+      "imageUrl": "https://images.unsplash.com/photo-1674574752509-1754d8098241?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzZWElMjBiYXNzfGVufDB8fHx8MTc2MjU5ODAyM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sea bass"
+    },
+    {
+      "id": "menu-chicken",
+      "description": "A whole organic chicken.",
+      "imageUrl": "https://images.unsplash.com/photo-1642102903909-560c5a7665bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx3aG9sZSUyMGNoaWNrZW58ZW58MHx8fHwxNzYyNTk0Nzk3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "whole chicken"
+    },
+    {
+      "id": "menu-prawns",
+      "description": "A bowl of fresh king prawns.",
+      "imageUrl": "https://images.unsplash.com/photo-1649077711893-3f0fa5ac0a3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxraW5nJTIwcHJhd25zfGVufDB8fHx8MTc2MjUxMTU1M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "king prawns"
+    }
+  ]
 }
