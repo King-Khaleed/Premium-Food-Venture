@@ -12,7 +12,7 @@ export function Contact() {
         </h2>
         <div className="flex items-center justify-center gap-2 text-lg md:text-xl mb-12 animate-bounce">
           <MapPin className="h-6 w-6 text-accent" />
-          <p>Plot 48119 Malum Sufyan Street, Dantulse Ward, Tarauni L.G.A, Kano, Nigeria</p>
+          <p>Plot 48119 Mallam Sufyan Street, Dantulse Ward, Tarauni L.G.A, Kano, Nigeria</p>
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button asChild size="lg" className="bg-accent hover:bg-accent/90 text-primary-foreground font-ui">
