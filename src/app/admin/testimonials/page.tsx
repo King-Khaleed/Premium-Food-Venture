@@ -1,33 +1,15 @@
 'use client';
 import Image from "next/image"
-import { MoreHorizontal, PlusCircle } from "lucide-react"
-import { useState } from 'react';
+import { MoreHorizontal, PlusCircle, Star } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import {
   Dialog,
   DialogContent,
@@ -51,43 +33,50 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
-const mockProducts = [
-    {
-        id: "1",
-        name: "Fresh Tilapia",
-        description: "Premium fresh tilapia",
-        imageUrl: "/img/product-fresh-tilapia.png",
-        status: "active"
-    },
-    {
-        id: "2",
-        name: "Whole Chicken",
-        description: "Tender whole chicken",
-        imageUrl: "/img/product-whole-chicken.png",
-        status: "active"
-    },
-    {
-        id: "3",
-        name: "Dried Fish",
-        description: "Smoked dried fish",
-        imageUrl: "/img/product-dried-fish.png",
-        status: "archived"
-    },
-    {
-        id: "4",
-        name: "Fresh Catfish",
-        description: "Live fresh catfish",
-        imageUrl: "/img/product-fresh-catfish.png",
-        status: "active"
-    }
-]
+const mockTestimonials = [
+  {
+    id: "1",
+    name: "Aisha Mohammed",
+    avatar: "/img/female-headshot.jpg",
+    rating: 5,
+    text: "The best quality chicken I've ever bought! Fresh, tender, and delivered right on time."
+  },
+  {
+    id: "2",
+    name: "Ibrahim Yusuf",
+    avatar: "/img/male-headshot.jpg",
+    rating: 5,
+    text: "Their fish is always fresh and the delivery service is exceptional. Highly recommend!"
+  },
+  {
+    id: "3",
+    name: "Fatima Abdullahi",
+    avatar: "/img/female-headshot.jpg",
+    rating: 4,
+    text: "Premium quality at reasonable prices. The dried fish is my favorite!"
+  }
+];
 
-type Product = typeof mockProducts[0];
+type Testimonial = typeof mockTestimonials[0];
 
-function ProductDialog({ product, children }: { product?: Product, children: React.ReactNode }) {
-  const title = product ? "Edit Product" : "Add Product";
-  const description = product ? "Make changes to your product. Click save when you're done." : "Add a new product to your inventory. Click save when you're done.";
+function TestimonialDialog({ testimonial, children }: { testimonial?: Testimonial, children: React.ReactNode }) {
+  const title = testimonial ? "Edit Testimonial" : "Add Testimonial";
+  const description = testimonial ? "Make changes to this testimonial." : "Add a new customer testimonial.";
   
   return (
     <Dialog>
@@ -104,19 +93,25 @@ function ProductDialog({ product, children }: { product?: Product, children: Rea
             <Label htmlFor="name" className="text-right">
               Name
             </Label>
-            <Input id="name" defaultValue={product?.name} className="col-span-3" />
+            <Input id="name" defaultValue={testimonial?.name} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="description" className="text-right">
-              Description
+            <Label htmlFor="text" className="text-right">
+              Text
             </Label>
-            <Textarea id="description" defaultValue={product?.description} className="col-span-3" />
+            <Textarea id="text" defaultValue={testimonial?.text} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="image" className="text-right">
-              Image
+            <Label htmlFor="rating" className="text-right">
+              Rating
             </Label>
-            <Input id="image" type="file" className="col-span-3" />
+            <Input id="rating" type="number" min="1" max="5" defaultValue={testimonial?.rating} className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="avatar" className="text-right">
+              Avatar
+            </Label>
+            <Input id="avatar" type="file" className="col-span-3" />
           </div>
         </div>
         <DialogFooter>
@@ -137,8 +132,7 @@ function DeleteConfirmationDialog({ children }: { children: React.ReactNode }) {
                 <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete this
-                    product from our servers.
+                    This action cannot be undone. This will permanently delete this testimonial.
                 </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -150,38 +144,38 @@ function DeleteConfirmationDialog({ children }: { children: React.ReactNode }) {
     );
 }
 
-export default function AdminProductsPage() {
+export default function AdminTestimonialsPage() {
   return (
     <>
-    <div className="flex items-center justify-between">
-      <h1 className="text-lg font-semibold md:text-2xl">Products</h1>
-       <ProductDialog>
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg font-semibold md:text-2xl">Testimonials</h1>
+        <TestimonialDialog>
           <Button size="sm" className="h-8 gap-1">
-              <PlusCircle className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Add Product
-              </span>
+            <PlusCircle className="h-3.5 w-3.5" />
+            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+              Add Testimonial
+            </span>
           </Button>
-        </ProductDialog>
-    </div>
+        </TestimonialDialog>
+      </div>
       <Card>
         <CardHeader>
-          <CardTitle>Products</CardTitle>
+          <CardTitle>Customer Testimonials</CardTitle>
           <CardDescription>
-            Manage your products and view their sales performance.
+            Manage what your customers are saying about you.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="hidden w-[100px] sm:table-cell">
-                  <span className="sr-only">Image</span>
+                <TableHead className="hidden w-[64px] sm:table-cell">
+                  <span className="sr-only">Avatar</span>
                 </TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Rating</TableHead>
                 <TableHead className="hidden md:table-cell">
-                  Description
+                  Testimonial
                 </TableHead>
                 <TableHead>
                   <span className="sr-only">Actions</span>
@@ -189,25 +183,30 @@ export default function AdminProductsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockProducts.map((product) => (
-                <TableRow key={product.id}>
+              {mockTestimonials.map((testimonial) => (
+                <TableRow key={testimonial.id}>
                     <TableCell className="hidden sm:table-cell">
                     <Image
-                        alt={product.name}
-                        className="aspect-square rounded-md object-cover"
-                        height="64"
-                        src={product.imageUrl}
-                        width="64"
+                        alt={testimonial.name}
+                        className="aspect-square rounded-full object-cover"
+                        height="40"
+                        src={testimonial.avatar}
+                        width="40"
                     />
                     </TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell className="font-medium">{testimonial.name}</TableCell>
                     <TableCell>
-                    <Badge variant={product.status === 'active' ? 'default' : 'outline'}>
-                        {product.status}
-                    </Badge>
+                        <div className="flex items-center gap-0.5">
+                            {Array(testimonial.rating).fill(0).map((_, i) => (
+                                <Star key={i} className="h-4 w-4 text-accent fill-accent" />
+                            ))}
+                             {Array(5 - testimonial.rating).fill(0).map((_, i) => (
+                                <Star key={i} className="h-4 w-4 text-muted-foreground" />
+                            ))}
+                        </div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
-                    {product.description}
+                        {testimonial.text}
                     </TableCell>
                     <TableCell>
                     <DropdownMenu>
@@ -223,9 +222,9 @@ export default function AdminProductsPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                         <ProductDialog product={product}>
+                         <TestimonialDialog testimonial={testimonial}>
                             <button className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 w-full">Edit</button>
-                        </ProductDialog>
+                        </TestimonialDialog>
                         <DeleteConfirmationDialog>
                              <button className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 w-full text-destructive">Delete</button>
                         </DeleteConfirmationDialog>
@@ -237,11 +236,6 @@ export default function AdminProductsPage() {
             </TableBody>
           </Table>
         </CardContent>
-        <CardFooter>
-          <div className="text-xs text-muted-foreground">
-            Showing <strong>1-{mockProducts.length}</strong> of <strong>{mockProducts.length}</strong> products
-          </div>
-        </CardFooter>
       </Card>
     </>
   )
