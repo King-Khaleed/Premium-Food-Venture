@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export async function revalidateGallery() {
   revalidatePath('/admin/gallery');
+  revalidatePath('/gallery'); // Revalidate the public gallery page
   revalidatePath('/'); // Revalidate the homepage
 }
 
@@ -32,7 +33,8 @@ export async function createGalleryItem({
   }
 
   revalidatePath('/admin/gallery');
-  revalidatePath('/'); // Revalidate the homepage
+  revalidatePath('/gallery');
+  revalidatePath('/');
   return { data, error: null };
 }
 
@@ -58,7 +60,8 @@ export async function updateGalleryItem(
   }
 
   revalidatePath('/admin/gallery');
-  revalidatePath('/'); // Revalidate the homepage
+  revalidatePath('/gallery');
+  revalidatePath('/');
   return { data, error: null };
 }
 
@@ -113,7 +116,8 @@ export async function deleteGalleryItem(galleryItemId: string): Promise<{ error:
   }
 
   revalidatePath('/admin/gallery');
-  revalidatePath('/'); // Revalidate the homepage
+  revalidatePath('/gallery');
+  revalidatePath('/');
 
   return { error: null };
 }

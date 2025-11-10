@@ -1,18 +1,9 @@
 
-import { createSupabaseAnonClient } from '@/lib/supabase-client';
-import { GalleryClient } from './gallery-client';
-
-interface ImagePlaceholder {
-  id: string;
-  description: string;
-  imageUrl: string;
-  imageHint?: string;
-  title?: string;
-  category?: string;
-}
+import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { GalleryClient, type GalleryImage } from './gallery-client';
 
 export async function Gallery() {
-  const supabase = createSupabaseAnonClient();
+  const supabase = createSupabaseServerClient();
   const { data: galleryItems, error } = await supabase.from('gallery').select('*');
 
   if (error) {
@@ -20,13 +11,14 @@ export async function Gallery() {
     return <GalleryClient initialImages={[]} />;
   }
 
-  const initialImages: ImagePlaceholder[] = galleryItems.map(item => ({
+  // Directly pass the Supabase data, which already matches the GalleryImage type.
+  // The GalleryImage type in gallery-client.tsx expects 'image_url', which is what Supabase provides.
+  const initialImages: GalleryImage[] = galleryItems.map(item => ({
     id: item.id,
-    description: item.description || '',
-    imageUrl: item.image_url,
-    title: item.title || '',
-    category: item.category || '',
-    imageHint: item.title || item.description || '', // Using title or description as hint
+    title: item.title || null,
+    description: item.description || null,
+    image_url: item.image_url,
+    category: item.category || null,
   }));
 
   return (
