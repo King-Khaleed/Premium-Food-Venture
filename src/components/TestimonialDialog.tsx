@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { createSupabaseAnonClient } from '@/lib/supabase-client';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
+import { Checkbox } from './ui/checkbox';
 
 // Define the Testimonial type based on your Supabase schema
 interface Testimonial {
@@ -23,6 +24,7 @@ interface Testimonial {
   content: string;
   rating?: number;
   avatar_url?: string;
+  is_approved: boolean;
 }
 
 interface TestimonialDialogProps {
@@ -36,6 +38,7 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
   const [authorName, setAuthorName] = useState('');
   const [content, setContent] = useState('');
   const [rating, setRating] = useState<number | ''>('');
+  const [isApproved, setIsApproved] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,6 +51,7 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
         setAuthorName(initialData.author_name || '');
         setContent(initialData.content || '');
         setRating(initialData.rating || '');
+        setIsApproved(initialData.is_approved || false);
         setCurrentAvatarUrl(initialData.avatar_url || null);
         setAvatarFile(null);
       } else {
@@ -60,6 +64,7 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
     setAuthorName('');
     setContent('');
     setRating('');
+    setIsApproved(false);
     setAvatarFile(null);
     setCurrentAvatarUrl(null);
   };
@@ -76,7 +81,7 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
       if (avatarFile) {
         // Upload new avatar if one is selected
         const fileExtension = avatarFile.name.split('.').pop();
-        const filePath = `${uuidv4()}.${fileExtension}`;
+        const filePath = `public/${uuidv4()}.${fileExtension}`;
         
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('avatars') // Correct bucket name
@@ -101,6 +106,7 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
         content: content,
         rating: typeof rating === 'number' ? rating : null,
         avatar_url: avatarUrl,
+        is_approved: isApproved,
       };
 
       if (isEditing) {
@@ -204,6 +210,15 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
                 Current Image: <a href={currentAvatarUrl} target="_blank" rel="noopener noreferrer" className="underline">View</a>
               </div>
             )}
+          <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="isApproved" className="text-right">Approved</Label>
+              <Checkbox
+                id="isApproved"
+                checked={isApproved}
+                onCheckedChange={(checked) => setIsApproved(Boolean(checked))}
+                className="col-span-3"
+              />
+          </div>
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (initialData?.id ? 'Updating...' : 'Saving...') : (initialData?.id ? 'Save Changes' : 'Save Testimonial')}

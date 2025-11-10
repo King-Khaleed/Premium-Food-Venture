@@ -12,13 +12,14 @@ export async function revalidateTestimonials() {
 export async function createTestimonial(formData: any) {
     const supabase = createSupabaseServerClient();
     // author_title is removed
-    const { author_name, content, rating, avatar_url } = formData;
+    const { author_name, content, rating, avatar_url, is_approved } = formData;
     
     const testimonialData = {
         author_name,
         content,
         rating,
         avatar_url,
+        is_approved
     };
 
     const { data, error } = await supabase.from('testimonials').insert([testimonialData]);
@@ -37,13 +38,14 @@ export async function createTestimonial(formData: any) {
 export async function updateTestimonial(id: string, formData: any) {
     const supabase = createSupabaseServerClient();
     // author_title is removed
-    const { author_name, content, rating, avatar_url } = formData;
+    const { author_name, content, rating, avatar_url, is_approved } = formData;
     
     const testimonialData = {
         author_name,
         content,
         rating,
         avatar_url,
+        is_approved,
     };
     
     const { data, error } = await supabase.from('testimonials').update(testimonialData).eq('id', id);

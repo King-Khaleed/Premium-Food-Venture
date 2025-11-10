@@ -6,15 +6,13 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function Testimonials() {
   const supabase = createSupabaseServerClient();
+  // Removed the .eq('is_approved', true) filter to show all testimonials
   const { data: testimonials, error } = await supabase
     .from('testimonials')
-    .select('*')
-    .eq('is_approved', true); // Fetch only approved testimonials
+    .select('*');
 
   if (error) {
     console.error('Error fetching testimonials:', error.message);
-    // You might want to return an empty array or a specific error UI here
-    // For now, we'll proceed with an empty array if there's an error
     return (
       <section id="testimonials" className="w-full py-20 md:py-32 bg-cream-light">
         <div className="container">
@@ -41,7 +39,7 @@ export async function Testimonials() {
         <Carousel
           opts={{
             align: "start",
-            loop: true,
+            loop: approvedTestimonials.length > 1, // Only loop if more than one item
           }}
           className="w-full max-w-2xl mx-auto"
         >
@@ -51,7 +49,7 @@ export async function Testimonials() {
                 <div className="p-1">
                   <Card className="bg-white rounded-lg shadow-lg overflow-hidden">
                     <CardContent className="p-8 text-center">
-                      {testimonial.avatar_url && (
+                      {testimonial.avatar_url ? (
                         <Image
                           src={testimonial.avatar_url}
                           alt={testimonial.author_name || "Testimonial author"}
@@ -59,6 +57,10 @@ export async function Testimonials() {
                           height={80}
                           className="rounded-full mx-auto mb-4 border-4 border-accent"
                         />
+                      ) : (
+                         <div className="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-accent bg-muted flex items-center justify-center">
+                            <span className="text-xs text-muted-foreground">No Image</span>
+                        </div>
                       )}
                       <h3 className="font-ui font-bold text-xl text-charcoal mb-1">{testimonial.author_name}</h3>
                       <div className="flex justify-center mb-4">
@@ -73,8 +75,12 @@ export async function Testimonials() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12" />
-          <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12" />
+           {approvedTestimonials.length > 1 && (
+            <>
+                <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12" />
+                <CarouselNext className="absolute right-0 top-1_2 -translate-y-1/2 translate-x-12" />
+            </>
+           )}
         </Carousel>
       </div>
     </section>
