@@ -2,12 +2,12 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Button } from './ui/button';
-import { createSupabaseAnonClient } from '@/lib/supabase-client';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 const whatsappLink = "https://wa.me/2348034384620";
 
 export async function Products() {
-  const supabase = createSupabaseAnonClient();
+  const supabase = createSupabaseServerClient();
   let products = [];
 
   try {

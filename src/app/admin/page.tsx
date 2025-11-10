@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { createSupabaseServerClient } from "@/lib/supabase-client";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function AdminDashboard() {
   const supabase = createSupabaseServerClient();
@@ -17,7 +17,7 @@ export default async function AdminDashboard() {
   // Fetch product count
   const { count: products_count, error: productsError } = await supabase
     .from('products')
-    .select('*', { count: 'exact' });
+    .select('*', { count: 'exact', head: true });
   if (!productsError && products_count !== null) {
     productCount = products_count;
   } else if (productsError) {
@@ -27,7 +27,7 @@ export default async function AdminDashboard() {
   // Fetch gallery count
   const { count: gallery_count, error: galleryError } = await supabase
     .from('gallery')
-    .select('*', { count: 'exact' });
+    .select('*', { count: 'exact', head: true });
   if (!galleryError && gallery_count !== null) {
     galleryCount = gallery_count;
   } else if (galleryError) {
@@ -37,7 +37,7 @@ export default async function AdminDashboard() {
   // Fetch testimonial count
   const { count: testimonials_count, error: testimonialsError } = await supabase
     .from('testimonials')
-    .select('*', { count: 'exact' });
+    .select('*', { count: 'exact', head: true });
   if (!testimonialsError && testimonials_count !== null) {
     testimonialCount = testimonials_count;
   } else if (testimonialsError) {
