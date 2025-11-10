@@ -37,7 +37,7 @@ export default function LoginPage() {
     } else {
       toast({
         title: "Login Successful",
-        description: "Welcome back! Redirecting...",
+        description: "Redirecting to dashboard...",
       });
       // A full page refresh is the most reliable way to ensure the new
       // authentication state is recognized by the middleware.
