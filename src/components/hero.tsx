@@ -1,7 +1,5 @@
 'use client';
-
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from './ui/button';
 import { ArrowDown } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -26,35 +24,32 @@ const letter = {
   },
 };
 
-export function Hero() {
-  const heroImage = PlaceHolderImages.find(img => img.id === 'hero-image');
+export function Hero() { // Removed async keyword
   const title = "PREMIUM FOOD VENTURE";
   const whatsappLink = "https://wa.me/2348034384620";
 
   return (
     <section className="relative h-screen min-h-[600px] w-full flex flex-col items-center justify-center text-center text-white overflow-hidden">
-      {heroImage && (
-        <motion.div
-          className="absolute inset-0"
-          style={{ y: 0 }}
-          animate={{ y: ['0%', '10%'] }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            repeatType: 'reverse',
-            ease: 'easeInOut'
-          }}
-        >
-          <Image
-            src={heroImage.imageUrl}
-            alt={heroImage.description}
-            fill
-            className="object-cover"
-            priority
-            data-ai-hint={heroImage.imageHint}
-          />
-        </motion.div>
-      )}
+      <motion.div // Removed conditional rendering for heroImage
+        className="absolute inset-0"
+        style={{ y: 0 }}
+        animate={{ y: ['0%', '10%'] }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          repeatType: 'reverse',
+          ease: 'easeInOut'
+        }}
+      >
+        <Image
+          src={"/img/hero-background.png"} // Static image path
+          alt={"Hero Background"} // Static alt text
+          fill
+          className="object-cover"
+          priority
+          // data-ai-hint is removed as it was tied to dynamic data
+        />
+      </motion.div>
       <div className="absolute inset-0 bg-black/50" />
       
       <div className="relative z-10 p-4 max-w-4xl">

@@ -1,46 +1,31 @@
-'use client';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from './ui/button';
-
-const products = [
-  {
-    id: 1,
-    name: "Fresh Tilapia",
-    description: "Premium fresh tilapia",
-    imageId: "menu-fish"
-  },
-  {
-    id: 2,
-    name: "Whole Chicken",
-    description: "Tender whole chicken",
-    imageId: "menu-chicken"
-  },
-  {
-    id: 3,
-    name: "Dried Fish",
-    description: "Smoked dried fish",
-    imageId: "menu-prawns" // Using prawns as placeholder
-  },
-  {
-    id: 4,
-    name: "Fresh Catfish",
-    description: "Live fresh catfish",
-    imageId: "product-catfish"
-  },
-  {
-    id: 5,
-    name: "Another Fish",
-    description: "Another delicious fish",
-    imageId: "gallery-3" // Using gallery as placeholder
-  }
-];
+import { createSupabaseClient } from '@/lib/supabase-client';
 
 const whatsappLink = "https://wa.me/2348034384620";
 
-export function Products() {
+export async function Products() {
+  const supabase = createSupabaseClient();
+  let products = [];
+
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('is_featured', true); // Fetch only featured products
+
+    if (error) {
+      console.error('Error fetching featured products:', error.message);
+    } else {
+      products = data || [];
+    }
+  } catch (error) {
+    console.error('Error in Supabase client operation:', error);
+    products = [];
+  }
+
   return (
     <section id="products" className="w-full py-20 md:py-32 bg-cream-dark">
       <div className="container">
@@ -56,20 +41,19 @@ export function Products() {
         >
           <CarouselContent>
             {products.map((product) => {
-              const image = PlaceHolderImages.find(img => img.id === product.imageId);
               return (
                 <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
                   <div className="p-1">
                     <Card className="rounded-lg overflow-hidden group">
                       <CardContent className="relative aspect-square p-0">
-                        {image && (
+                        {product.image_url && (
                           <Image
-                            src={image.imageUrl}
+                            src={product.image_url}
                             alt={product.name}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="object-cover transition-transform duration-300 group-hover:scale-110"
-                            data-ai-hint={image.imageHint}
+                            // data-ai-hint={product.imageHint} // imageHint is no longer directly available from the product table
                           />
                         )}
                         <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">

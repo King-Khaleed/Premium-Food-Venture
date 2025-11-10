@@ -1,6 +1,7 @@
 'use client';
 import Image from "next/image"
-import { MoreHorizontal, PlusCircle, Star } from "lucide-react"
+import { MoreHorizontal, PlusCircle, Trash2, SquarePen } from "lucide-react" // Added Trash2 and SquarePen
+import { useState } from 'react';
 
 import { Button } from "@/components/ui/button"
 import {
@@ -11,15 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -29,10 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/alert-dialog" // All AlertDialog components are already imported.
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,109 +37,93 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-const mockTestimonials = [
-  {
-    id: "1",
-    name: "Aisha Mohammed",
-    avatar: "/img/female-headshot.jpg",
-    rating: 5,
-    text: "The best quality chicken I've ever bought! Fresh, tender, and delivered right on time."
-  },
-  {
-    id: "2",
-    name: "Ibrahim Yusuf",
-    avatar: "/img/male-headshot.jpg",
-    rating: 5,
-    text: "Their fish is always fresh and the delivery service is exceptional. Highly recommend!"
-  },
-  {
-    id: "3",
-    name: "Fatima Abdullahi",
-    avatar: "/img/female-headshot.jpg",
-    rating: 4,
-    text: "Premium quality at reasonable prices. The dried fish is my favorite!"
+import { createSupabaseClient } from "@/lib/supabase-client";
+import TestimonialDialog from "@/components/TestimonialDialog";
+import { revalidateTestimonials, deleteTestimonial } from './actions'; // Import deleteTestimonial
+import { useToast } from '@/hooks/use-toast'; // Import useToast
+
+// Define a type for the testimonial data fetched from Supabase
+interface Testimonial {
+  id: string;
+  created_at: string;
+  author_name: string;
+  author_title: string | null;
+  content: string;
+  rating: number | null;
+  avatar_url: string | null;
+  is_approved: boolean;
+}
+
+export default async function AdminTestimonialsPage() {
+  const supabase = createSupabaseClient();
+  const { data: testimonials, error } = await supabase.from('testimonials').select('*');
+  const { toast } = useToast(); // Initialize toast
+
+  if (error) {
+    console.error('Error fetching testimonials:', error.message);
+    toast({
+      title: 'Error',
+      description: `Failed to load testimonials: ${error.message}`,
+      variant: 'destructive',
+    });
   }
-];
 
-type Testimonial = typeof mockTestimonials[0];
+  const fetchedTestimonials: Testimonial[] = testimonials || [];
 
-function TestimonialDialog({ testimonial, children }: { testimonial?: Testimonial, children: React.ReactNode }) {
-  const title = testimonial ? "Edit Testimonial" : "Add Testimonial";
-  const description = testimonial ? "Make changes to this testimonial." : "Add a new customer testimonial.";
-  
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input id="name" defaultValue={testimonial?.name} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="text" className="text-right">
-              Text
-            </Label>
-            <Textarea id="text" defaultValue={testimonial?.text} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="rating" className="text-right">
-              Rating
-            </Label>
-            <Input id="rating" type="number" min="1" max="5" defaultValue={testimonial?.rating} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="avatar" className="text-right">
-              Avatar
-            </Label>
-            <Input id="avatar" type="file" className="col-span-3" />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // Controls the TestimonialDialog visibility
+  const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null); // State to hold testimonial being edited
 
-function DeleteConfirmationDialog({ children }: { children: React.ReactNode }) {
-    return (
-        <AlertDialog>
-            <AlertDialogTrigger asChild>
-                {children}
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete this testimonial.
-                </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction>Continue</AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    );
-}
+  // Moved handleDelete to be a client-side function to work with AlertDialog
+  const handleDelete = async (id: string) => {
+    try {
+      // Call the server action directly
+      await deleteTestimonial(id);
+      toast({
+        title: 'Success',
+        description: 'Testimonial deleted successfully.',
+      });
+      // The revalidation is handled within deleteTestimonial server action
+    } catch (err: any) {
+      toast({
+        title: 'Error',
+        description: `Failed to delete testimonial: ${err.message || 'Unknown error'}`,
+        variant: 'destructive',
+      });
+    }
+  };
 
-export default function AdminTestimonialsPage() {
+  const handleEditClick = (testimonial: Testimonial) => {
+    setEditingTestimonial(testimonial);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = (open: boolean) => {
+    if (!open) {
+      setEditingTestimonial(null); // Clear editing testimonial when dialog closes
+    }
+    setIsDialogOpen(open);
+  };
+
+  const handleTestimonialOperationSuccess = () => {
+    revalidateTestimonials(); // This will trigger a server-side revalidation
+    setIsDialogOpen(false); // Close the dialog after the action
+    setEditingTestimonial(null); // Clear editing testimonial after successful op
+  };
+
   return (
     <>
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold md:text-2xl">Testimonials</h1>
-        <TestimonialDialog>
-          <Button size="sm" className="h-8 gap-1">
+        <TestimonialDialog
+          isOpen={isDialogOpen}
+          onOpenChange={handleDialogClose} // Use the combined close handler
+          initialData={editingTestimonial} // Pass initialData for editing
+          onTestimonialAdded={handleTestimonialOperationSuccess}
+        >
+          <Button size="sm" className="h-8 gap-1" onClick={() => {
+            setEditingTestimonial(null); // Ensure no initial data when opening for add
+            setIsDialogOpen(true);
+          }}>
             <PlusCircle className="h-3.5 w-3.5" />
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
               Add Testimonial
@@ -183,30 +156,31 @@ export default function AdminTestimonialsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockTestimonials.map((testimonial) => (
+              {fetchedTestimonials.map((testimonial) => (
                 <TableRow key={testimonial.id}>
                     <TableCell className="hidden sm:table-cell">
                     <Image
-                        alt={testimonial.name}
+                        alt={testimonial.author_name}
                         className="aspect-square rounded-full object-cover"
                         height="40"
-                        src={testimonial.avatar}
+                        src={testimonial.avatar_url || '/img/placeholder-avatar.jpg'} // Provide a fallback avatar
                         width="40"
                     />
                     </TableCell>
-                    <TableCell className="font-medium">{testimonial.name}</TableCell>
+                    <TableCell className="font-medium">{testimonial.author_name}</TableCell>
                     <TableCell>
                         <div className="flex items-center gap-0.5">
-                            {Array(testimonial.rating).fill(0).map((_, i) => (
-                                <Star key={i} className="h-4 w-4 text-accent fill-accent" />
+                            {/* Assuming rating is 1-5 */}
+                            {Array(testimonial.rating || 0).fill(0).map((_, i) => (
+                                <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-accent fill-accent" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                             ))}
-                             {Array(5 - testimonial.rating).fill(0).map((_, i) => (
-                                <Star key={i} className="h-4 w-4 text-muted-foreground" />
+                             {Array(5 - (testimonial.rating || 0)).fill(0).map((_, i) => (
+                                <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                             ))}
                         </div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
-                        {testimonial.text}
+                        {testimonial.content}
                     </TableCell>
                     <TableCell>
                     <DropdownMenu>
@@ -221,13 +195,36 @@ export default function AdminTestimonialsPage() {
                         </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                         <TestimonialDialog testimonial={testimonial}>
-                            <button className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 w-full">Edit</button>
-                        </TestimonialDialog>
-                        <DeleteConfirmationDialog>
-                             <button className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 w-full text-destructive">Delete</button>
-                        </DeleteConfirmationDialog>
+                        {/* Edit Testimonial button - now directly in DropdownMenuContent */}
+                        <button
+                            onClick={() => handleEditClick(testimonial)}
+                            className="relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                        >
+                            <SquarePen className="mr-2 h-4 w-4" />Edit
+                        </button>
+
+                        {/* Delete Confirmation Dialog */}
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <button className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-destructive focus:text-destructive-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 w-full text-destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" />Delete
+                                </button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete this testimonial.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(testimonial.id)}>
+                                        Continue
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                         </DropdownMenuContent>
                     </DropdownMenu>
                     </TableCell>

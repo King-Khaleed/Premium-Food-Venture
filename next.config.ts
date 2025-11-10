@@ -1,4 +1,3 @@
-
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -16,6 +15,12 @@ const nextConfig: NextConfig = {
         hostname: 'images.unsplash.com',
         port: '',
         pathname: '/**',
+      },
+      {
+          protocol: 'https',
+          hostname: '*.supabase.co',
+          port: '',
+          pathname: '/**', // Allow any path within the Supabase storage
       },
     ],
   },

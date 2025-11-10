@@ -1,6 +1,10 @@
 'use client';
+
 import Image from "next/image"
-import { MoreHorizontal, PlusCircle } from "lucide-react"
+import { MoreHorizontal, PlusCircle, SquarePen, Trash2 } from "lucide-react"
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { revalidateGallery, deleteGalleryItem } from "./actions"; // Assuming deleteGalleryItem will be added here
 
 import { Button } from "@/components/ui/button"
 import {
@@ -10,15 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,106 +25,122 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { PlaceHolderImages, type ImagePlaceholder } from "@/lib/placeholder-images";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
-function GalleryItemDialog({ item, children }: { item?: ImagePlaceholder, children: React.ReactNode }) {
-  const title = item ? "Edit Gallery Item" : "Add Gallery Item";
-  const description = item ? "Make changes to this gallery item." : "Add a new image or video to your gallery.";
-  
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="title" className="text-right">
-              Title
-            </Label>
-            <Input id="title" defaultValue={item?.title} placeholder="e.g., Fresh Salmon" className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="description" className="text-right">
-              Description
-            </Label>
-            <Textarea id="description" defaultValue={item?.description} placeholder="A close-up of a fresh salmon fillet." className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="category" className="text-right">
-              Category
-            </Label>
-            <Input id="category" defaultValue={item?.category} placeholder="fish, chicken, or dried-products" className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="image" className="text-right">
-              Image
-            </Label>
-            <Input id="image" type="file" className="col-span-3" />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+import { createSupabaseClient } from "@/lib/supabase-client";
+import { GalleryDialog } from "@/components/GalleryDialog"; // Import the new dialog component
 
-function DeleteConfirmationDialog({ children }: { children: React.ReactNode }) {
-    return (
-        <AlertDialog>
-            <AlertDialogTrigger asChild>
-                {children}
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete this
-                    item from the gallery.
-                </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction>Continue</AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    );
+interface GalleryItem {
+  id: string;
+  created_at: string;
+  title: string;
+  image_url: string;
+  description: string;
+  category: string;
 }
 
 export default function AdminGalleryPage() {
-  const galleryImages = PlaceHolderImages.filter(img => img.id.startsWith('gallery-'));
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingGalleryItem, setEditingGalleryItem] = useState<GalleryItem | null>(null);
+  const { toast } = useToast();
+
+  // Fetching data inside a client component
+  // This is a temporary setup. For production, you'd typically fetch data on the server
+  // and pass it as props, or use a client-side data fetching library like SWR/React Query.
+  // For now, to quickly get the CRUD UI working, we will re-fetch on the client.
+  const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // This effect will run once to fetch initial data and then whenever revalidation happens
+  // We should ideally pass this from a Server Component that wraps this Client Component.
+  // But for the sake of making this page interactive as per the request, we'll fetch here.
+  useState(() => {
+    async function fetchGalleryItems() {
+      setIsLoading(true);
+      const supabase = createSupabaseClient();
+      const { data, error } = await supabase.from('gallery').select('*');
+
+      if (error) {
+        console.error("Error fetching gallery images:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load gallery items.",
+          variant: "destructive",
+        });
+        setGalleryImages([]);
+      } else {
+        setGalleryImages(data as GalleryItem[]);
+      }
+      setIsLoading(false);
+    }
+    fetchGalleryItems();
+  });
+
+
+  const onGalleryItemAddedOrUpdated = async () => {
+    setIsDialogOpen(false);
+    setEditingGalleryItem(null); // Reset editing state
+    // Trigger server action to revalidate data
+    await revalidateGallery();
+    // For immediate client-side update without full page reload,
+    // we would ideally refetch the data here or pass a fresh prop.
+    // Given the current structure, revalidateGallery() will make the server
+    // component that renders this page re-fetch, but for this client component,
+    // we need to trigger the fetch again or get updated props.
+    // For now, re-running the initial fetch logic for demonstration.
+    const supabase = createSupabaseClient();
+    const { data, error } = await supabase.from('gallery').select('*');
+    if (error) {
+      console.error("Error re-fetching gallery images:", error);
+      toast({
+        title: "Error",
+        description: "Failed to refresh gallery items after update.",
+        variant: "destructive",
+      });
+      setGalleryImages([]);
+    } else {
+      setGalleryImages(data as GalleryItem[]);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    const { error } = await deleteGalleryItem(id); // Call the server action
+    if (error) {
+      toast({
+        title: "Error",
+        description: `Failed to delete gallery item: ${error.message}`,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Gallery item deleted successfully.",
+      });
+      await onGalleryItemAddedOrUpdated(); // Revalidate and refresh list
+    }
+  };
 
   return (
     <>
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold md:text-2xl">Gallery</h1>
-        <GalleryItemDialog>
-            <Button size="sm" className="h-8 gap-1">
-                <PlusCircle className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Add Item
-                </span>
-            </Button>
-        </GalleryItemDialog>
+        <Button size="sm" className="h-8 gap-1" onClick={() => {
+            setEditingGalleryItem(null); // Ensure no item is being edited
+            setIsDialogOpen(true);
+        }}>
+          <PlusCircle className="h-3.5 w-3.5" />
+          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+            Add Item
+          </span>
+        </Button>
       </div>
+
+      <GalleryDialog
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        initialData={editingGalleryItem}
+        onGalleryItemAddedOrUpdated={onGalleryItemAddedOrUpdated}
+      />
+
       <Card>
         <CardHeader>
           <CardTitle>Gallery Items</CardTitle>
@@ -138,48 +149,73 @@ export default function AdminGalleryPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {galleryImages.map((image) => (
-            <Card key={image.id} className="group">
+          {isLoading ? (
+            <p>Loading gallery items...</p>
+          ) : galleryImages.length === 0 ? (
+            <p className="col-span-full text-center text-muted-foreground">No gallery items found. Add one!</p>
+          ) : (
+            galleryImages.map((image) => (
+              <Card key={image.id} className="group">
                 <CardContent className="p-0 relative">
-                    <Image
-                        alt={image.description}
-                        className="aspect-square w-full rounded-t-lg object-cover"
-                        height="200"
-                        src={image.imageUrl}
-                        width="200"
-                    />
-                    {image.category && <Badge className="absolute top-2 right-2">{image.category}</Badge>}
-                    <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                          <Button
-                              aria-haspopup="true"
-                              size="icon"
-                              variant="ghost"
-                              className="bg-white/50 hover:bg-white/75 rounded-full h-8 w-8"
-                          >
-                              <MoreHorizontal className="h-4 w-4 text-black" />
-                              <span className="sr-only">Toggle menu</span>
-                          </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <GalleryItemDialog item={image}>
-                                <button className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 w-full">Edit</button>
-                            </GalleryItemDialog>
-                            <DeleteConfirmationDialog>
-                                <button className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 w-full text-destructive">Delete</button>
-                            </DeleteConfirmationDialog>
-                          </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+                  <Image
+                    alt={image.description}
+                    className="aspect-square w-full rounded-t-lg object-cover"
+                    height="200"
+                    src={image.image_url}
+                    width="200"
+                  />
+                  {image.category && <Badge className="absolute top-2 right-2">{image.category}</Badge>}
+                  <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          aria-haspopup="true"
+                          size="icon"
+                          variant="ghost"
+                          className="bg-white/50 hover:bg-white/75 rounded-full h-8 w-8"
+                        >
+                          <MoreHorizontal className="h-4 w-4 text-black" />
+                          <span className="sr-only">Toggle menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem onSelect={() => {
+                            setEditingGalleryItem(image);
+                            setIsDialogOpen(true);
+                        }}>
+                          <SquarePen className="mr-2 h-4 w-4" /> Edit
+                        </DropdownMenuItem>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}> {/* Prevent dropdown closing immediately */}
+                              <Trash2 className="mr-2 h-4 w-4 text-destructive" /> Delete
+                            </DropdownMenuItem>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete the gallery item: &quot;{image.title}&quot;.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(image.id)}>Continue</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </CardContent>
                 <div className="p-4 text-sm">
-                    <h3 className="font-medium leading-none">{image.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{image.description}</p>
+                  <h3 className="font-medium leading-none">{image.title}</h3>
+                  <p className="text-xs text-muted-foreground mt-1">{image.description}</p>
                 </div>
-            </Card>
-          ))}
+              </Card>
+            ))
+          )}
         </CardContent>
       </Card>
     </>
