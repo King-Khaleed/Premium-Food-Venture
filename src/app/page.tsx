@@ -7,6 +7,8 @@ import { Testimonials } from '@/components/testimonials';
 import { Contact } from '@/components/contact';
 import { Footer } from '@/components/footer';
 
+export const revalidate = 0;
+
 export default function Home() {
   return (
     <main>

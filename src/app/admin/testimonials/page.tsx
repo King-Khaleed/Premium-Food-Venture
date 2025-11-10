@@ -37,8 +37,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { createSupabaseClient } from "@/lib/supabase-client";
-import TestimonialDialog from "@/components/TestimonialDialog";
+import { createSupabaseAnonClient } from "@/lib/supabase-client";
+import { TestimonialDialog } from "@/components/TestimonialDialog";
 import { revalidateTestimonials, deleteTestimonial } from './actions'; // Import deleteTestimonial
 import { useToast } from '@/hooks/use-toast'; // Import useToast
 
@@ -55,7 +55,7 @@ interface Testimonial {
 }
 
 export default async function AdminTestimonialsPage() {
-  const supabase = createSupabaseClient();
+  const supabase = createSupabaseAnonClient();
   const { data: testimonials, error } = await supabase.from('testimonials').select('*');
   const { toast } = useToast(); // Initialize toast
 

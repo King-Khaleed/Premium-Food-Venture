@@ -5,10 +5,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { createSupabaseClient } from "@/lib/supabase-client";
+import { createSupabaseServerClient } from "@/lib/supabase-client";
 
 export default async function AdminDashboard() {
-  const supabase = createSupabaseClient();
+  const supabase = createSupabaseServerClient();
 
   let productCount = 0;
   let galleryCount = 0;

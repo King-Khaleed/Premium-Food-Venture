@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { createSupabaseClient } from '@/lib/supabase-client';
+import { createSupabaseAnonClient } from '@/lib/supabase-client';
 import { createProduct, updateProduct } from '@/app/admin/products/actions'; // Assuming these actions exist and handle image_url
 
 // Define the type for a product to be used in initialData
@@ -91,7 +91,7 @@ export function ProductDialog({
 
     if (imageFile) {
       // If a new file is selected, upload it
-      const supabase = createSupabaseClient();
+      const supabase = createSupabaseAnonClient();
       const fileExtension = imageFile.name.split('.').pop();
       const filePath = `products/${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExtension}`;
 

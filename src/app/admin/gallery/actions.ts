@@ -1,10 +1,12 @@
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createSupabaseClient } from '@/lib/supabase-client';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export async function revalidateGallery() {
   revalidatePath('/admin/gallery');
+  revalidatePath('/'); // Revalidate the homepage
 }
 
 export async function createGalleryItem({
@@ -17,8 +19,8 @@ export async function createGalleryItem({
   description?: string;
   image_url: string;
   category?: string;
-}) {
-  const supabase = createSupabaseClient();
+}): Promise<{ data: any | null; error: Error | null }> {
+  const supabase = createSupabaseServerClient();
   const { data, error } = await supabase
     .from('gallery')
     .insert([{ title, description, image_url, category }])
@@ -26,11 +28,12 @@ export async function createGalleryItem({
 
   if (error) {
     console.error('Error creating gallery item:', error);
-    throw new Error('Failed to create gallery item.');
+    return { data: null, error: new Error('Failed to create gallery item.') };
   }
 
   revalidatePath('/admin/gallery');
-  return data;
+  revalidatePath('/'); // Revalidate the homepage
+  return { data, error: null };
 }
 
 export async function updateGalleryItem(
@@ -41,8 +44,8 @@ export async function updateGalleryItem(
     image_url?: string;
     category?: string;
   }
-) {
-  const supabase = createSupabaseClient();
+): Promise<{ data: any[] | null; error: Error | null }> {
+  const supabase = createSupabaseServerClient();
   const { data, error } = await supabase
     .from('gallery')
     .update(updatedFields)
@@ -51,15 +54,16 @@ export async function updateGalleryItem(
 
   if (error) {
     console.error('Error updating gallery item:', error);
-    throw new Error('Failed to update gallery item.');
+    return { data: null, error: new Error('Failed to update gallery item.') };
   }
 
   revalidatePath('/admin/gallery');
-  return data;
+  revalidatePath('/'); // Revalidate the homepage
+  return { data, error: null };
 }
 
-export async function deleteGalleryItem(galleryItemId: string) {
-  const supabase = createSupabaseClient();
+export async function deleteGalleryItem(galleryItemId: string): Promise<{ error: Error | null }> {
+  const supabase = createSupabaseServerClient();
 
   // 1. Fetch the image_url first
   const { data: galleryItem, error: fetchError } = await supabase
@@ -70,12 +74,11 @@ export async function deleteGalleryItem(galleryItemId: string) {
 
   if (fetchError) {
     console.error('Error fetching gallery item for deletion:', fetchError);
-    throw new Error('Failed to fetch gallery item for deletion.');
+    return { error: new Error('Failed to fetch gallery item for deletion.') };
   }
 
   if (galleryItem?.image_url) {
     // 2. Extract image path/filename from the image_url
-    // Assuming image_url format like: https://[project_id].supabase.co/storage/v1/object/public/gallery/path/to/image.jpg
     const urlParts = galleryItem.image_url.split('/');
     const bucketName = 'gallery'; // Your bucket name
     const filePathIndex = urlParts.indexOf(bucketName);
@@ -90,8 +93,8 @@ export async function deleteGalleryItem(galleryItemId: string) {
 
       if (storageError) {
         console.error('Error deleting image from storage:', storageError);
-        // Depending on requirements, you might still want to delete the DB entry
-        // or re-throw after logging. For now, we'll just log and proceed.
+        // Return error but don't stop the db deletion
+        return { error: new Error('Failed to delete image from storage.') };
       }
     } else {
       console.warn('Could not extract file path from URL:', galleryItem.image_url);
@@ -106,8 +109,11 @@ export async function deleteGalleryItem(galleryItemId: string) {
 
   if (dbError) {
     console.error('Error deleting gallery item from database:', dbError);
-    throw new Error('Failed to delete gallery item from database.');
+    return { error: new Error('Failed to delete gallery item from database.') };
   }
 
   revalidatePath('/admin/gallery');
+  revalidatePath('/'); // Revalidate the homepage
+
+  return { error: null };
 }

@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { createSupabaseClient } from '@/lib/supabase-client';
+import { createSupabaseAnonClient } from '@/lib/supabase-client';
 import { useToast } from '@/hooks/use-toast';
 
 // Define the Testimonial type based on your Supabase schema
@@ -70,7 +70,7 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
     e.preventDefault();
     setIsSubmitting(true);
 
-    const supabase = createSupabaseClient();
+    const supabase = createSupabaseAnonClient();
     const isEditing = !!initialData?.id;
     const toastAction = isEditing ? 'update' : 'add';
 

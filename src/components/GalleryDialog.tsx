@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { createSupabaseClient } from '@/lib/supabase-client';
+import { createSupabaseAnonClient } from '@/lib/supabase-client';
 import { v4 as uuidv4 } from 'uuid';
 
 // Define a type for the gallery item that matches our Supabase schema
@@ -44,7 +44,7 @@ export function GalleryDialog({
   const [category, setCategory] = useState(initialData?.category || '');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const supabase = createSupabaseClient();
+  const supabase = createSupabaseAnonClient();
 
   useEffect(() => {
     if (initialData) {

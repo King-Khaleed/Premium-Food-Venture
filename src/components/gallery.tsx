@@ -1,5 +1,5 @@
 
-import { createSupabaseClient } from '@/lib/supabase-client';
+import { createSupabaseAnonClient } from '@/lib/supabase-client';
 import { GalleryClient } from './gallery-client';
 
 interface ImagePlaceholder {
@@ -12,7 +12,7 @@ interface ImagePlaceholder {
 }
 
 export async function Gallery() {
-  const supabase = createSupabaseClient();
+  const supabase = createSupabaseAnonClient();
   const { data: galleryItems, error } = await supabase.from('gallery').select('*');
 
   if (error) {

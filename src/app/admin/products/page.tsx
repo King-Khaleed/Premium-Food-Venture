@@ -1,4 +1,4 @@
-import { createSupabaseClient } from "@/lib/supabase-client";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { ProductsClient } from "@/components/admin/products-client"; // Import the new ProductsClient component
 
 // Define the Product type based on the Supabase schema
@@ -14,7 +14,7 @@ export type Product = { // Exported for use in ProductDialog and ProductsClient
 };
 
 export default async function AdminProductsPage() {
-  const supabase = createSupabaseClient();
+  const supabase = createSupabaseBrowserClient();
   const { data: products, error } = await supabase.from('products').select('*');
 
   if (error) {

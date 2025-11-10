@@ -2,11 +2,12 @@
 
 import Image from "next/image"
 import { MoreHorizontal, PlusCircle, SquarePen, Trash2 } from "lucide-react"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { revalidateGallery, deleteGalleryItem } from "./actions"; // Assuming deleteGalleryItem will be added here
+import { revalidateGallery, deleteGalleryItem } from "./actions";
 
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -14,6 +15,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,8 +34,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-import { createSupabaseClient } from "@/lib/supabase-client";
-import { GalleryDialog } from "@/components/GalleryDialog"; // Import the new dialog component
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { GalleryDialog } from "@/components/GalleryDialog";
 
 interface GalleryItem {
   id: string;
@@ -42,21 +50,13 @@ export default function AdminGalleryPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingGalleryItem, setEditingGalleryItem] = useState<GalleryItem | null>(null);
   const { toast } = useToast();
-
-  // Fetching data inside a client component
-  // This is a temporary setup. For production, you'd typically fetch data on the server
-  // and pass it as props, or use a client-side data fetching library like SWR/React Query.
-  // For now, to quickly get the CRUD UI working, we will re-fetch on the client.
   const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // This effect will run once to fetch initial data and then whenever revalidation happens
-  // We should ideally pass this from a Server Component that wraps this Client Component.
-  // But for the sake of making this page interactive as per the request, we'll fetch here.
-  useState(() => {
+  useEffect(() => {
     async function fetchGalleryItems() {
       setIsLoading(true);
-      const supabase = createSupabaseClient();
+      const supabase = createSupabaseBrowserClient();
       const { data, error } = await supabase.from('gallery').select('*');
 
       if (error) {
@@ -73,21 +73,14 @@ export default function AdminGalleryPage() {
       setIsLoading(false);
     }
     fetchGalleryItems();
-  });
+  }, []);
 
 
   const onGalleryItemAddedOrUpdated = async () => {
     setIsDialogOpen(false);
-    setEditingGalleryItem(null); // Reset editing state
-    // Trigger server action to revalidate data
+    setEditingGalleryItem(null);
     await revalidateGallery();
-    // For immediate client-side update without full page reload,
-    // we would ideally refetch the data here or pass a fresh prop.
-    // Given the current structure, revalidateGallery() will make the server
-    // component that renders this page re-fetch, but for this client component,
-    // we need to trigger the fetch again or get updated props.
-    // For now, re-running the initial fetch logic for demonstration.
-    const supabase = createSupabaseClient();
+    const supabase = createSupabaseBrowserClient();
     const { data, error } = await supabase.from('gallery').select('*');
     if (error) {
       console.error("Error re-fetching gallery images:", error);
@@ -103,7 +96,18 @@ export default function AdminGalleryPage() {
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await deleteGalleryItem(id); // Call the server action
+    const result = await deleteGalleryItem(id);
+
+    if (!result) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. The delete operation did not return a response.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { error } = result;
     if (error) {
       toast({
         title: "Error",
@@ -115,7 +119,7 @@ export default function AdminGalleryPage() {
         title: "Success",
         description: "Gallery item deleted successfully.",
       });
-      await onGalleryItemAddedOrUpdated(); // Revalidate and refresh list
+      await onGalleryItemAddedOrUpdated();
     }
   };
 
@@ -124,7 +128,7 @@ export default function AdminGalleryPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold md:text-2xl">Gallery</h1>
         <Button size="sm" className="h-8 gap-1" onClick={() => {
-            setEditingGalleryItem(null); // Ensure no item is being edited
+            setEditingGalleryItem(null);
             setIsDialogOpen(true);
         }}>
           <PlusCircle className="h-3.5 w-3.5" />
@@ -188,7 +192,7 @@ export default function AdminGalleryPage() {
                         </DropdownMenuItem>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}> {/* Prevent dropdown closing immediately */}
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                               <Trash2 className="mr-2 h-4 w-4 text-destructive" /> Delete
                             </DropdownMenuItem>
                           </AlertDialogTrigger>
