@@ -16,14 +16,16 @@ import { createSupabaseAnonClient } from '@/lib/supabase-client';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { Checkbox } from './ui/checkbox';
+import { updateTestimonial, createTestimonial } from '@/app/admin/testimonials/actions';
+
 
 // Define the Testimonial type based on your Supabase schema
 interface Testimonial {
   id: string;
   author_name: string;
   content: string;
-  rating?: number;
-  avatar_url?: string;
+  rating?: number | null;
+  avatar_url?: string | null;
   is_approved: boolean;
 }
 
@@ -109,24 +111,25 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
         is_approved: isApproved,
       };
 
+      let result;
       if (isEditing) {
         // UPDATE operation
-        const { error } = await supabase
-          .from('testimonials')
-          .update(testimonialData)
-          .eq('id', initialData.id);
-
-        if (error) throw error;
-        toast({ title: 'Success!', description: 'Testimonial updated successfully.' });
+        result = await updateTestimonial(initialData.id, testimonialData);
       } else {
         // INSERT operation
-        const { error } = await supabase.from('testimonials').insert(testimonialData);
-
-        if (error) throw error;
-        toast({ title: 'Success!', description: 'Testimonial added successfully.' });
-        resetForm();
+        result = await createTestimonial(testimonialData);
+      }
+      
+      if (result.error) {
+          throw new Error(result.error.message);
       }
 
+      toast({ title: 'Success!', description: `Testimonial ${isEditing ? 'updated' : 'added'} successfully.` });
+      
+      if (!isEditing) {
+        resetForm();
+      }
+      
       await onTestimonialAdded();
       onOpenChange(false);
     } catch (error: any) {
@@ -160,8 +163,8 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
               required
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="content" className="text-right">
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="content" className="text-right pt-2">
               Testimonial
             </Label>
             <Textarea
@@ -195,7 +198,7 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="avatarFile" className="text-right">
-              Avatar Image
+              Avatar
             </Label>
             <Input
               id="avatarFile"
@@ -206,18 +209,21 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
             />
           </div>
            {currentAvatarUrl && !avatarFile && (
-              <div className="col-span-4 text-sm text-muted-foreground text-center">
-                Current Image: <a href={currentAvatarUrl} target="_blank" rel="noopener noreferrer" className="underline">View</a>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <div className="col-start-2 col-span-3 text-sm text-muted-foreground">
+                  Current: <a href={currentAvatarUrl} target="_blank" rel="noopener noreferrer" className="underline">View Image</a>
+                </div>
               </div>
             )}
           <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="isApproved" className="text-right">Approved</Label>
-              <Checkbox
-                id="isApproved"
-                checked={isApproved}
-                onCheckedChange={(checked) => setIsApproved(Boolean(checked))}
-                className="col-span-3"
-              />
+              <div className="col-span-3">
+                <Checkbox
+                  id="isApproved"
+                  checked={isApproved}
+                  onCheckedChange={(checked) => setIsApproved(Boolean(checked))}
+                />
+              </div>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>
