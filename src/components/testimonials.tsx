@@ -2,10 +2,10 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Star } from 'lucide-react';
-import { createSupabaseAnonClient } from "@/lib/supabase-client";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function Testimonials() {
-  const supabase = createSupabaseAnonClient();
+  const supabase = createSupabaseServerClient();
   const { data: testimonials, error } = await supabase
     .from('testimonials')
     .select('*')
