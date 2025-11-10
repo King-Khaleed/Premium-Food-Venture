@@ -1,4 +1,3 @@
-
 'use client';
 import Image from "next/image"
 import { MoreHorizontal, PlusCircle, Trash2, SquarePen } from "lucide-react"
@@ -21,6 +20,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import {
   DropdownMenu,
