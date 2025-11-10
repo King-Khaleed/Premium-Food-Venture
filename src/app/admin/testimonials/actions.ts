@@ -9,56 +9,97 @@ export async function revalidateTestimonials() {
     revalidatePath('/');
 }
 
-export async function createTestimonial(formData: FormData) {
+export async function createTestimonial(formData: any) {
     const supabase = createSupabaseServerClient();
-    const rawFormData = {
-        name: formData.get('name') as string,
-        role: formData.get('role') as string,
-        testimonial: formData.get('testimonial') as string,
-        avatar_url: formData.get('avatar_url') as string,
+    // author_title is removed
+    const { author_name, content, rating, avatar_url } = formData;
+    
+    const testimonialData = {
+        author_name,
+        content,
+        rating,
+        avatar_url,
     };
-    const { data, error } = await supabase.from('testimonials').insert([rawFormData]);
+
+    const { data, error } = await supabase.from('testimonials').insert([testimonialData]);
 
     if (error) {
         console.error('Error creating testimonial:', error);
-        return { error: 'Failed to create testimonial.' };
+        return { error: { message: 'Failed to create testimonial.' } };
     }
 
     revalidatePath('/admin/testimonials');
     revalidatePath('/');
-    return { data };
+    return { data, error: null };
 }
 
-export async function updateTestimonial(id: string, formData: FormData) {
+
+export async function updateTestimonial(id: string, formData: any) {
     const supabase = createSupabaseServerClient();
-    const rawFormData = {
-        name: formData.get('name') as string,
-        role: formData.get('role') as string,
-        testimonial: formData.get('testimonial') as string,
-        avatar_url: formData.get('avatar_url') as string,
+    // author_title is removed
+    const { author_name, content, rating, avatar_url } = formData;
+    
+    const testimonialData = {
+        author_name,
+        content,
+        rating,
+        avatar_url,
     };
-    const { data, error } = await supabase.from('testimonials').update(rawFormData).eq('id', id);
+    
+    const { data, error } = await supabase.from('testimonials').update(testimonialData).eq('id', id);
 
     if (error) {
         console.error('Error updating testimonial:', error);
-        return { error: 'Failed to update testimonial.' };
+        return { error: { message: 'Failed to update testimonial.' } };
     }
 
     revalidatePath('/admin/testimonials');
     revalidatePath('/');
-    return { data };
+    return { data, error: null };
 }
+
 
 export async function deleteTestimonial(id: string) {
     const supabase = createSupabaseServerClient();
-    const { data, error } = await supabase.from('testimonials').delete().eq('id', id);
 
-    if (error) {
-        console.error('Error deleting testimonial:', error);
-        return { error: 'Failed to delete testimonial.' };
+    // 1. Fetch avatar_url to delete from storage
+    const { data: testimonial, error: fetchError } = await supabase
+        .from('testimonials')
+        .select('avatar_url')
+        .eq('id', id)
+        .single();
+
+    if (fetchError) {
+        console.error('Error fetching testimonial for deletion:', fetchError);
+        // Don't block DB deletion if this fails, but log it.
     }
+
+    // 2. Delete from database
+    const { error: dbError } = await supabase.from('testimonials').delete().eq('id', id);
+
+    if (dbError) {
+        console.error('Error deleting testimonial from DB:', dbError);
+        return { error: { message: 'Failed to delete testimonial.' } };
+    }
+
+    // 3. If DB deletion was successful, delete from storage
+    if (testimonial?.avatar_url) {
+        const urlParts = testimonial.avatar_url.split('/');
+        const bucketName = 'testimonials'; 
+        const filePathIndex = urlParts.indexOf(bucketName);
+        
+        if (filePathIndex > -1 && filePathIndex + 1 < urlParts.length) {
+            const filePath = urlParts.slice(filePathIndex + 1).join('/');
+            const { error: storageError } = await supabase.storage.from(bucketName).remove([filePath]);
+            if (storageError) {
+                console.error('Error deleting avatar from storage:', storageError);
+                // Non-critical, so we don't return an error to the client
+            }
+        }
+    }
+
 
     revalidatePath('/admin/testimonials');
     revalidatePath('/');
-    return { data };
+    return { data: null, error: null };
 }

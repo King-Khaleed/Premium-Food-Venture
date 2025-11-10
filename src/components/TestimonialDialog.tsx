@@ -14,12 +14,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { createSupabaseAnonClient } from '@/lib/supabase-client';
 import { useToast } from '@/hooks/use-toast';
+import { v4 as uuidv4 } from 'uuid';
 
 // Define the Testimonial type based on your Supabase schema
 interface Testimonial {
   id: string;
   author_name: string;
-  author_title?: string;
   content: string;
   rating?: number;
   avatar_url?: string;
@@ -29,30 +29,28 @@ interface TestimonialDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onTestimonialAdded: () => Promise<void>;
-  initialData?: Testimonial; // New prop for editing
+  initialData?: Testimonial | null; 
 }
 
 export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, initialData }: TestimonialDialogProps) {
   const [authorName, setAuthorName] = useState('');
-  const [authorTitle, setAuthorTitle] = useState('');
   const [content, setContent] = useState('');
   const [rating, setRating] = useState<number | ''>('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { toast } = useToast();
 
   useEffect(() => {
-    if (isOpen) { // Only reset or populate when dialog opens
+    if (isOpen) { 
       if (initialData) {
-        // Populate form fields for editing
         setAuthorName(initialData.author_name || '');
-        setAuthorTitle(initialData.author_title || '');
         setContent(initialData.content || '');
         setRating(initialData.rating || '');
-        setAvatarUrl(initialData.avatar_url || '');
+        setCurrentAvatarUrl(initialData.avatar_url || null);
+        setAvatarFile(null);
       } else {
-        // Reset form for adding new
         resetForm();
       }
     }
@@ -60,10 +58,10 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
 
   const resetForm = () => {
     setAuthorName('');
-    setAuthorTitle('');
     setContent('');
     setRating('');
-    setAvatarUrl('');
+    setAvatarFile(null);
+    setCurrentAvatarUrl(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,62 +70,64 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
 
     const supabase = createSupabaseAnonClient();
     const isEditing = !!initialData?.id;
-    const toastAction = isEditing ? 'update' : 'add';
+    let avatarUrl = currentAvatarUrl;
 
     try {
+      if (avatarFile) {
+        // Upload new avatar if one is selected
+        const fileExtension = avatarFile.name.split('.').pop();
+        const filePath = `avatars/${uuidv4()}.${fileExtension}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('testimonials') // Assuming 'testimonials' bucket exists for avatars
+          .upload(filePath, avatarFile, {
+            cacheControl: '3600',
+            upsert: isEditing, // Upsert if editing to replace the old image if names collide
+          });
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from('testimonials')
+          .getPublicUrl(filePath);
+        
+        avatarUrl = publicUrlData.publicUrl;
+      }
+
+      const testimonialData = {
+        author_name: authorName,
+        content: content,
+        rating: typeof rating === 'number' ? rating : null,
+        avatar_url: avatarUrl,
+      };
+
       if (isEditing) {
         // UPDATE operation
         const { error } = await supabase
           .from('testimonials')
-          .update({
-            author_name: authorName,
-            author_title: authorTitle,
-            content: content,
-            rating: typeof rating === 'number' ? rating : null,
-            avatar_url: avatarUrl || null,
-          })
+          .update(testimonialData)
           .eq('id', initialData.id);
 
-        if (error) {
-          throw error;
-        }
-
-        toast({
-          title: 'Success!',
-          description: 'Testimonial updated successfully.',
-          variant: 'default',
-        });
+        if (error) throw error;
+        toast({ title: 'Success!', description: 'Testimonial updated successfully.' });
       } else {
         // INSERT operation
-        const { data, error } = await supabase
-          .from('testimonials')
-          .insert({
-            author_name: authorName,
-            author_title: authorTitle,
-            content: content,
-            rating: typeof rating === 'number' ? rating : null,
-            avatar_url: avatarUrl || null,
-          });
+        const { error } = await supabase.from('testimonials').insert(testimonialData);
 
-        if (error) {
-          throw error;
-        }
-
-        toast({
-          title: 'Success!',
-          description: 'Testimonial added successfully.',
-          variant: 'default',
-        });
-        resetForm(); // Reset only on successful add, not on edit
+        if (error) throw error;
+        toast({ title: 'Success!', description: 'Testimonial added successfully.' });
+        resetForm();
       }
 
-      await onTestimonialAdded(); // Call the revalidation action
-      onOpenChange(false); // Close dialog
+      await onTestimonialAdded();
+      onOpenChange(false);
     } catch (error: any) {
-      console.error(`Error ${toastAction}ing testimonial:`, error);
+      console.error(`Error saving testimonial:`, error);
       toast({
         title: 'Error',
-        description: `Failed to ${toastAction} testimonial: ${error.message || 'Unknown error'}`,
+        description: `Failed to save testimonial: ${error.message || 'Unknown error'}`,
         variant: 'destructive',
       });
     } finally {
@@ -152,17 +152,6 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
               onChange={(e) => setAuthorName(e.target.value)}
               className="col-span-3"
               required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="authorTitle" className="text-right">
-              Author Title
-            </Label>
-            <Input
-              id="authorTitle"
-              value={authorTitle}
-              onChange={(e) => setAuthorTitle(e.target.value)}
-              className="col-span-3"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -199,17 +188,22 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="avatarUrl" className="text-right">
-              Avatar URL
+            <Label htmlFor="avatarFile" className="text-right">
+              Avatar Image
             </Label>
             <Input
-              id="avatarUrl"
-              type="url"
-              value={avatarUrl}
-              onChange={(e) => setAvatarUrl(e.target.value)}
+              id="avatarFile"
+              type="file"
+              onChange={(e) => setAvatarFile(e.target.files ? e.target.files[0] : null)}
               className="col-span-3"
+              accept="image/*"
             />
           </div>
+           {currentAvatarUrl && !avatarFile && (
+              <div className="col-span-4 text-sm text-muted-foreground text-center">
+                Current Image: <a href={currentAvatarUrl} target="_blank" rel="noopener noreferrer" className="underline">View</a>
+              </div>
+            )}
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (initialData?.id ? 'Updating...' : 'Saving...') : (initialData?.id ? 'Save Changes' : 'Save Testimonial')}

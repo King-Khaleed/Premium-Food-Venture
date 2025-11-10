@@ -2,7 +2,7 @@
 'use client';
 import Image from "next/image"
 import { MoreHorizontal, PlusCircle, Trash2, SquarePen } from "lucide-react"
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { Button } from "@/components/ui/button"
 import {
@@ -39,14 +39,13 @@ import {
 
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { TestimonialDialog } from "@/components/TestimonialDialog";
-import { revalidateTestimonials, deleteTestimonial } from './actions';
+import { deleteTestimonial, revalidateTestimonials } from './actions';
 import { useToast } from '@/hooks/use-toast';
 
 interface Testimonial {
   id: string;
   created_at: string;
   author_name: string;
-  author_title: string | null;
   content: string;
   rating: number | null;
   avatar_url: string | null;
@@ -60,10 +59,10 @@ export default function AdminTestimonialsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
 
-  const fetchTestimonials = async () => {
+  const fetchTestimonials = useCallback(async () => {
     setIsLoading(true);
     const supabase = createSupabaseBrowserClient();
-    const { data, error } = await supabase.from('testimonials').select('*');
+    const { data, error } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching testimonials:', error.message);
@@ -77,26 +76,26 @@ export default function AdminTestimonialsPage() {
       setTestimonials(data as Testimonial[]);
     }
     setIsLoading(false);
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchTestimonials();
-  }, []);
+  }, [fetchTestimonials]);
 
   const handleDelete = async (id: string) => {
-    try {
-      await deleteTestimonial(id);
+    const { error } = await deleteTestimonial(id);
+    if (error) {
       toast({
+        title: 'Error',
+        description: `Failed to delete testimonial: ${error.message || 'Unknown error'}`,
+        variant: 'destructive',
+      });
+    } else {
+       toast({
         title: 'Success',
         description: 'Testimonial deleted successfully.',
       });
-      await fetchTestimonials(); // Refetch after delete
-    } catch (err: any) {
-      toast({
-        title: 'Error',
-        description: `Failed to delete testimonial: ${err.message || 'Unknown error'}`,
-        variant: 'destructive',
-      });
+      await fetchTestimonials();
     }
   };
 
@@ -115,6 +114,7 @@ export default function AdminTestimonialsPage() {
   const handleTestimonialOperationSuccess = async () => {
     setIsDialogOpen(false);
     setEditingTestimonial(null);
+    await revalidateTestimonials();
     await fetchTestimonials(); // Refetch after add/update
   };
 
@@ -172,13 +172,19 @@ export default function AdminTestimonialsPage() {
               ) : testimonials.map((testimonial) => (
                 <TableRow key={testimonial.id}>
                     <TableCell className="hidden sm:table-cell">
-                    <Image
-                        alt={testimonial.author_name}
-                        className="aspect-square rounded-full object-cover"
-                        height="40"
-                        src={testimonial.avatar_url || '/img/placeholder-avatar.jpg'}
-                        width="40"
-                    />
+                    {testimonial.avatar_url ? (
+                      <Image
+                          alt={testimonial.author_name}
+                          className="aspect-square rounded-full object-cover"
+                          height="40"
+                          src={testimonial.avatar_url}
+                          width="40"
+                      />
+                    ) : (
+                      <div className="aspect-square h-10 w-10 rounded-full bg-muted flex items-center justify-center text-xs">
+                        N/A
+                      </div>
+                    )}
                     </TableCell>
                     <TableCell className="font-medium">{testimonial.author_name}</TableCell>
                     <TableCell>
