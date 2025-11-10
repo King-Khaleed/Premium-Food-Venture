@@ -1,3 +1,6 @@
+'use client';
+
+import { usePathname } from 'next/navigation';
 import { Facebook, Instagram, Twitter } from 'lucide-react';
 import { Logo } from './logo';
 
@@ -10,6 +13,16 @@ const Wave = () => (
 );
 
 export function Footer() {
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
+
+  const getHref = (href: string) => {
+    if (href.startsWith('#') && !isHomePage) {
+      return `/${href}`;
+    }
+    return href;
+  };
+
   return (
     <footer className="bg-[#1B4332] text-white pt-1">
       <Wave />
@@ -22,19 +35,19 @@ export function Footer() {
           <div>
             <h3 className="font-ui font-bold text-lg mb-4 text-accent">Quick Links</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-accent transition-colors">Home</a></li>
-              <li><a href="#products" className="hover:text-accent transition-colors">Products</a></li>
+              <li><a href={getHref('/')} className="hover:text-accent transition-colors">Home</a></li>
+              <li><a href={getHref('#products')} className="hover:text-accent transition-colors">Products</a></li>
               <li><a href="/gallery" className="hover:text-accent transition-colors">Gallery</a></li>
-              <li><a href="#about" className="hover:text-accent transition-colors">About</a></li>
-              <li><a href="#contact" className="hover:text-accent transition-colors">Contact</a></li>
+              <li><a href={getHref('#about')} className="hover:text-accent transition-colors">About</a></li>
+              <li><a href={getHref('#contact')} className="hover:text-accent transition-colors">Contact</a></li>
             </ul>
           </div>
           <div>
             <h3 className="font-ui font-bold text-lg mb-4 text-accent">Products</h3>
             <ul className="space-y-2">
-              <li><a href="#products" className="hover:text-accent transition-colors">Fresh Fish</a></li>
-              <li><a href="#products" className="hover:text-accent transition-colors">Premium Chicken</a></li>
-              <li><a href="#products" className="hover:text-accent transition-colors">Dried Products</a></li>
+              <li><a href={getHref('#products')} className="hover:text-accent transition-colors">Fresh Fish</a></li>
+              <li><a href={getHref('#products')} className="hover:text-accent transition-colors">Premium Chicken</a></li>
+              <li><a href={getHref('#products')} className="hover:text-accent transition-colors">Dried Products</a></li>
             </ul>
           </div>
           <div>
