@@ -38,7 +38,7 @@ export function GalleryClient({ initialImages }: GalleryClientProps) {
 
   return (
     <>
-      <div className="flex justify-center items-center gap-2 md:gap-4 mb-12 sticky top-20 z-40 bg-secondary/30 py-4">
+      <div className="flex justify-center items-center gap-2 md:gap-4 mb-12 bg-secondary/30 py-4">
         {filters.map(filter => (
           <Button
             key={filter}
