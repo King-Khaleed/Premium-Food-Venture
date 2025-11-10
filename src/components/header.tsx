@@ -1,7 +1,9 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Phone, MessageCircle, Menu as MenuIcon, X } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { cn } from '@/lib/utils';
@@ -18,29 +20,31 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState('Home');
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-      const sections = navLinks.filter(l => l.href.startsWith('#')).map(l => l.href.substring(1));
-      let current = 'Home';
-      for(const sectionId of sections) {
-        const section = document.getElementById(sectionId);
-        if (section && window.scrollY >= section.offsetTop - 100) {
-          const link = navLinks.find(l => l.href === `#${sectionId}`);
-          if(link) current = link.name;
+      if (pathname === '/') {
+        const sections = navLinks.filter(l => l.href.startsWith('#')).map(l => l.href.substring(1));
+        let current = 'Home';
+        for(const sectionId of sections) {
+          const section = document.getElementById(sectionId);
+          if (section && window.scrollY >= section.offsetTop - 100) {
+            const link = navLinks.find(l => l.href === `#${sectionId}`);
+            if(link) current = link.name;
+          }
         }
-      }
-      if(window.location.pathname === '/') {
         setActiveLink(current);
-      } else if (window.location.pathname === '/gallery') {
-        setActiveLink('Gallery');
+      } else {
+        const currentLink = navLinks.find(l => l.href === pathname);
+        setActiveLink(currentLink ? currentLink.name : '');
       }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -49,6 +53,14 @@ export function Header() {
       document.body.style.overflow = 'auto';
     }
   }, [mobileMenuOpen]);
+
+  const getHref = (href: string) => {
+    const isHomePage = pathname === '/';
+    if (href.startsWith('#') && !isHomePage) {
+      return `/${href}`;
+    }
+    return href;
+  };
 
   return (
     <>
@@ -63,12 +75,18 @@ export function Header() {
           
           <nav className="hidden lg:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <Link key={link.name} href={link.href}
+              <Link key={link.name} href={getHref(link.href)}
                  className={cn(
                    "font-ui text-sm font-medium transition-colors relative after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:h-[2px] after:w-0 after:bg-accent after:transition-all after:duration-300 hover:text-accent hover:after:w-full",
                    activeLink === link.name ? 'text-accent' : 'text-white',
                  )}
-                 onClick={() => setActiveLink(link.name)}
+                 onClick={() => {
+                    if (pathname !== '/') {
+                      // No need to manually set active link here, useEffect handles it
+                    } else {
+                       setActiveLink(link.name)
+                    }
+                  }}
               >
                 {link.name}
               </Link>
@@ -112,7 +130,7 @@ export function Header() {
           </div>
           <nav className="flex flex-col items-center justify-center h-full -mt-16 space-y-8">
             {navLinks.map((link) => (
-              <Link key={link.name} href={link.href}
+              <Link key={link.name} href={getHref(link.href)}
                 className="font-ui text-3xl font-medium text-charcoal transition-colors hover:text-accent"
                 onClick={() => setMobileMenuOpen(false)}
               >
