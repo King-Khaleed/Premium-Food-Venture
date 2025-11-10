@@ -85,7 +85,7 @@ export async function deleteTestimonial(id: string) {
     // 3. If DB deletion was successful, delete from storage
     if (testimonial?.avatar_url) {
         const urlParts = testimonial.avatar_url.split('/');
-        const bucketName = 'testimonials'; 
+        const bucketName = 'avatars'; // Correct bucket name
         const filePathIndex = urlParts.indexOf(bucketName);
         
         if (filePathIndex > -1 && filePathIndex + 1 < urlParts.length) {

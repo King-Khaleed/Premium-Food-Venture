@@ -76,13 +76,13 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
       if (avatarFile) {
         // Upload new avatar if one is selected
         const fileExtension = avatarFile.name.split('.').pop();
-        const filePath = `avatars/${uuidv4()}.${fileExtension}`;
+        const filePath = `${uuidv4()}.${fileExtension}`;
         
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('testimonials') // Assuming 'testimonials' bucket exists for avatars
+          .from('avatars') // Correct bucket name
           .upload(filePath, avatarFile, {
             cacheControl: '3600',
-            upsert: isEditing, // Upsert if editing to replace the old image if names collide
+            upsert: isEditing,
           });
 
         if (uploadError) {
@@ -90,7 +90,7 @@ export function TestimonialDialog({ isOpen, onOpenChange, onTestimonialAdded, in
         }
 
         const { data: publicUrlData } = supabase.storage
-          .from('testimonials')
+          .from('avatars') // Correct bucket name
           .getPublicUrl(filePath);
         
         avatarUrl = publicUrlData.publicUrl;
