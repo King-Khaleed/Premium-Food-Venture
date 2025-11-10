@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Playfair_Display, Cormorant_Garamond, Inter, Montserrat } from 'next/font/google';
 import { cn } from '@/lib/utils';
+import { AuthRedirector } from '@/components/AuthRedirector';
 
 const playfairDisplay = Playfair_Display({
   subsets: ['latin'],
@@ -44,6 +45,7 @@ export default function RootLayout({
         inter.variable,
         montserrat.variable
       )}>
+        <AuthRedirector />
         {children}
         <Toaster />
       </body>

@@ -1,4 +1,3 @@
-
 'use client'
 
 import { Button } from "@/components/ui/button"
@@ -14,10 +13,12 @@ import { Label } from "@/components/ui/label"
 import { handleSignIn } from "./actions"
 import { useToast } from "@/hooks/use-toast"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -38,8 +39,9 @@ export default function LoginPage() {
         title: "Login Successful",
         description: "Welcome back! Redirecting...",
       });
-      // Use a full page refresh to ensure middleware re-evaluates auth state
-      window.location.href = '/admin';
+      // The AuthRedirector component will handle the redirect.
+      // We can also optimistically push, but the listener is more robust.
+      router.refresh(); 
     }
   };
 
