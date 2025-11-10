@@ -12,12 +12,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { handleSignIn } from "./actions"
-import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { useState } from "react"
 
 export default function LoginPage() {
-  const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -26,6 +24,8 @@ export default function LoginPage() {
     setLoading(true);
     const formData = new FormData(event.currentTarget);
     const result = await handleSignIn(formData);
+
+    setLoading(false);
 
     if (result.error) {
       toast({
@@ -36,12 +36,11 @@ export default function LoginPage() {
     } else {
       toast({
         title: "Login Successful",
-        description: "Welcome back!",
+        description: "Welcome back! Redirecting...",
       });
-      router.push('/admin');
-      router.refresh(); // Ensure the layout re-renders with user data
+      // Use a full page refresh to ensure middleware re-evaluates auth state
+      window.location.href = '/admin';
     }
-    setLoading(false);
   };
 
 
