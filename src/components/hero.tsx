@@ -29,7 +29,7 @@ export function Hero() { // Removed async keyword
   const whatsappLink = "https://wa.me/2348034384620";
 
   return (
-    <section className="relative h-screen min-h-[600px] w-full flex flex-col items-center justify-center text-center text-white overflow-hidden">
+    <section className="relative h-screen min-h-[600px] w-full flex flex-col items-center justify-center text-center text-white overflow-hidden pt-20">
       <motion.div // Removed conditional rendering for heroImage
         className="absolute inset-0"
         style={{ y: 0 }}

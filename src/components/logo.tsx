@@ -11,7 +11,7 @@ export function Logo({ isScrolled = false, isFooter = false }: LogoProps) {
       <span 
         className={cn(
           "text-2xl font-bold font-headline transition-colors",
-          isFooter ? 'text-white' : (isScrolled ? 'text-charcoal' : 'text-white')
+          isFooter ? 'text-white' : 'text-white'
         )}
       >
         PFV

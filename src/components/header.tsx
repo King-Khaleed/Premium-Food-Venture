@@ -54,20 +54,19 @@ export function Header() {
     <>
       <header
         className={cn(
-          "sticky top-0 z-50 w-full transition-all duration-300",
-          scrolled ? "bg-white/80 shadow-md backdrop-blur-sm" : "bg-transparent",
+          "sticky top-0 z-50 w-full transition-all duration-300 text-white",
+          scrolled ? "bg-primary-green-dark/90 shadow-md backdrop-blur-sm" : "bg-primary-green-dark",
         )}
       >
         <div className="container flex h-20 max-w-screen-2xl items-center justify-between">
-          <Logo isScrolled={scrolled} />
+          <Logo isFooter={true} />
           
           <nav className="hidden lg:flex items-center space-x-8">
             {navLinks.map((link) => (
               <Link key={link.name} href={link.href}
                  className={cn(
-                   "font-ui text-sm font-medium transition-colors relative after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:h-[2px] after:w-0 after:bg-accent after:transition-all after:duration-300 hover:after:w-full",
-                   activeLink === link.name ? 'text-accent' : (scrolled ? 'text-charcoal' : 'text-white'),
-                   !scrolled && "hover:text-white"
+                   "font-ui text-sm font-medium transition-colors relative after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:h-[2px] after:w-0 after:bg-accent after:transition-all after:duration-300 hover:text-accent hover:after:w-full",
+                   activeLink === link.name ? 'text-accent' : 'text-white',
                  )}
                  onClick={() => setActiveLink(link.name)}
               >
@@ -77,12 +76,12 @@ export function Header() {
           </nav>
 
           <div className="hidden lg:flex items-center space-x-6">
-            <a href="tel:08158998166" className={cn("flex items-center gap-2 font-ui text-sm font-medium transition-colors", scrolled ? 'text-charcoal hover:text-accent' : 'text-white hover:text-accent')}>
+            <a href="tel:08158998166" className={cn("flex items-center gap-2 font-ui text-sm font-medium transition-colors text-white hover:text-accent")}>
               <Phone className="h-4 w-4" />
               0815 8998 166
             </a>
              <a href="https://wa.me/2348034384620" target="_blank" rel="noopener noreferrer" className="relative">
-              <MessageCircle className={cn("h-6 w-6 transition-colors", scrolled ? 'text-charcoal hover:text-accent' : 'text-white hover:text-accent')} />
+              <MessageCircle className={cn("h-6 w-6 transition-colors text-white hover:text-accent")} />
               <span className="absolute top-0 right-0 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
@@ -95,7 +94,7 @@ export function Header() {
             onClick={() => setMobileMenuOpen(true)}
             aria-label="Open menu"
           >
-            <MenuIcon className={cn("h-7 w-7", scrolled ? 'text-charcoal' : 'text-white')} />
+            <MenuIcon className={cn("h-7 w-7 text-white")} />
           </button>
         </div>
       </header>
