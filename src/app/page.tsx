@@ -6,12 +6,14 @@ import { WhyChooseUs } from '@/components/why-choose-us';
 import { Testimonials } from '@/components/testimonials';
 import { Contact } from '@/components/contact';
 import { Footer } from '@/components/footer';
+import { Header } from '@/components/header';
 
 export const revalidate = 0;
 
 export default function Home() {
   return (
     <main>
+      <Header />
       <Hero />
       <Services />
       <WhyChooseUs />
