@@ -1,28 +1,18 @@
 
+'use client';
+
 import Link from "next/link"
 import {
-  Bell,
   CircleUser,
   Home,
   Menu,
   Package,
   Package2,
-  Search,
-  ShoppingCart,
-  Users,
   GalleryHorizontal,
   MessageSquareQuote
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,14 +21,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { handleSignOut } from "../login/actions";
+import { useRouter } from "next/navigation";
+
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const router = useRouter();
+
+  const onSignOut = async () => {
+    await handleSignOut();
+    router.push('/login');
+  }
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-muted/40 md:block">
@@ -152,7 +151,7 @@ export default function AdminLayout({
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={onSignOut}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
