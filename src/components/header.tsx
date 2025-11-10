@@ -54,8 +54,8 @@ export function Header() {
     <>
       <header
         className={cn(
-          "sticky top-0 z-50 w-full transition-all duration-300 text-white",
-          scrolled ? "bg-primary-green-dark/90 shadow-md backdrop-blur-sm" : "bg-primary-green-dark",
+          "sticky top-0 z-50 w-full transition-all duration-300 text-white bg-primary-green-dark",
+          scrolled ? "shadow-md" : "",
         )}
       >
         <div className="container flex h-20 max-w-screen-2xl items-center justify-between">
