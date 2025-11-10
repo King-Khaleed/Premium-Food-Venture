@@ -1,8 +1,8 @@
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { ProductsClient } from "@/components/admin/products-client"; // Import the new ProductsClient component
 
-// Define the Product type based on the Supabase schema
-export type Product = { // Exported for use in ProductDialog and ProductsClient
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { ProductsClient } from "@/components/admin/products-client"; 
+
+export type Product = {
     id: string;
     created_at: string;
     name: string;
@@ -14,12 +14,13 @@ export type Product = { // Exported for use in ProductDialog and ProductsClient
 };
 
 export default async function AdminProductsPage() {
-  const supabase = createSupabaseBrowserClient();
-  const { data: products, error } = await supabase.from('products').select('*');
+  const supabase = createSupabaseServerClient();
+  const { data: products, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
 
   if (error) {
     console.error('Error fetching products:', error);
-    // Handle error gracefully, perhaps return an empty array or show an error message
+    // Render an error state or return empty array
+    return <ProductsClient initialProducts={[]} />;
   }
 
   const fetchedProducts: Product[] = products || [];

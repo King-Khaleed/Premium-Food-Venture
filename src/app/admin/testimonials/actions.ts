@@ -4,6 +4,11 @@
 import { revalidatePath } from 'next/cache';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
+export async function revalidateTestimonials() {
+    revalidatePath('/admin/testimonials');
+    revalidatePath('/');
+}
+
 export async function createTestimonial(formData: FormData) {
     const supabase = createSupabaseServerClient();
     const rawFormData = {
