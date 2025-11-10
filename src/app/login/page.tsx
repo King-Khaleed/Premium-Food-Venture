@@ -39,8 +39,8 @@ export default function LoginPage() {
         title: "Login Successful",
         description: "Welcome back! Redirecting...",
       });
-      // The AuthRedirector component will handle the redirect.
-      // We can also optimistically push, but the listener is more robust.
+      // A full page refresh is the most reliable way to ensure the new
+      // authentication state is recognized by the middleware.
       router.refresh(); 
     }
   };
