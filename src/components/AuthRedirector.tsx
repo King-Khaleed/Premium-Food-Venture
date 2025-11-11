@@ -1,21 +1,33 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { LogIn } from 'lucide-react';
 
 export function AuthRedirector() {
   const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
 
+    const checkUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        setIsAdmin(!!user);
+    };
+
+    checkUser();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // This will trigger on SIGN_IN and SIGN_OUT
-      // On sign-in, Supabase automatically refreshes the session, and we can safely redirect.
-      // On sign-out, this ensures we refresh the page to clear any sensitive data.
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
-          router.refresh();
+      if (event === 'SIGNED_IN') {
+        setIsAdmin(true);
+        router.refresh();
+      } else if (event === 'SIGNED_OUT') {
+        setIsAdmin(false);
+        router.refresh();
       }
     });
 
@@ -24,5 +36,18 @@ export function AuthRedirector() {
     };
   }, [router]);
 
-  return null; // This component doesn't render anything.
+  if (isAdmin) {
+    return (
+        <div className="fixed bottom-4 right-4 z-50">
+            <Link href="/admin" passHref>
+                <Button size="lg">
+                    <LogIn className="mr-2 h-5 w-5" />
+                    Go to Admin
+                </Button>
+            </Link>
+        </div>
+    );
+  }
+
+  return null;
 }

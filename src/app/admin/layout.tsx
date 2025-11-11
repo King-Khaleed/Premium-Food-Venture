@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link"
@@ -9,7 +8,8 @@ import {
   Package,
   Package2,
   GalleryHorizontal,
-  MessageSquareQuote
+  MessageSquareQuote,
+  ExternalLink
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -43,9 +43,9 @@ export default function AdminLayout({
       <div className="hidden border-r bg-muted/40 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-            <Link href="/admin" className="flex items-center gap-2 font-semibold">
+            <Link href="/" className="flex items-center gap-2 font-semibold">
               <Package2 className="h-6 w-6" />
-              <span className="">PFV Admin</span>
+              <span className="">Admin Panel</span>
             </Link>
           </div>
           <div className="flex-1">
@@ -71,7 +71,7 @@ export default function AdminLayout({
                 <GalleryHorizontal className="h-4 w-4" />
                 Gallery
               </Link>
-               <Link
+              <Link
                 href="/admin/testimonials"
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
               >
@@ -98,11 +98,11 @@ export default function AdminLayout({
             <SheetContent side="left" className="flex flex-col">
               <nav className="grid gap-2 text-lg font-medium">
                 <Link
-                  href="#"
+                  href="/"
                   className="flex items-center gap-2 text-lg font-semibold"
                 >
                   <Package2 className="h-6 w-6" />
-                  <span className="sr-only">PFV Admin</span>
+                  <span className="sr-only">Admin Panel</span>
                 </Link>
                 <Link
                   href="/admin"
@@ -136,7 +136,12 @@ export default function AdminLayout({
             </SheetContent>
           </Sheet>
           <div className="w-full flex-1">
-            {/* Optional: Search form */}
+            <Link href="/" passHref>
+                <Button variant="outline">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    View Website
+                </Button>
+            </Link>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

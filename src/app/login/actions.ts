@@ -1,4 +1,3 @@
-
 'use server'
 
 import { createSupabaseServerClient } from "@/lib/supabase/server"
@@ -19,11 +18,11 @@ export async function handleSignIn(formData: FormData) {
   }
 
   revalidatePath('/', 'layout');
-  return { error: null };
+  return { error: null, success: true };
 }
 
 export async function handleSignOut() {
   const supabase = createSupabaseServerClient();
   await supabase.auth.signOut();
-  revalidatePath('/');
+  revalidatePath('/', 'layout');
 }

@@ -33,7 +33,7 @@ export function Hero() { // Removed async keyword
       <motion.div // Removed conditional rendering for heroImage
         className="absolute inset-0"
         style={{ y: 0 }}
-        animate={{ y: ['0%', '10%'] }}
+        animate={{ y: ['0%', '5%'] }}
         transition={{
           duration: 20,
           repeat: Infinity,

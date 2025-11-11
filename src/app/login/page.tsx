@@ -25,9 +25,9 @@ export default function LoginPage() {
     setLoading(true);
     const formData = new FormData(event.currentTarget);
     const result = await handleSignIn(formData);
-
+  
     setLoading(false);
-
+  
     if (result.error) {
       toast({
         title: "Login Failed",
@@ -39,9 +39,7 @@ export default function LoginPage() {
         title: "Login Successful",
         description: "Redirecting to dashboard...",
       });
-      // A full page refresh is the most reliable way to ensure the new
-      // authentication state is recognized by the middleware.
-      router.refresh(); 
+      window.location.href = '/admin';
     }
   };
 
